@@ -26,61 +26,164 @@ export default new Router({
   routes: constantRouterMap
 })
 export const asyncRouterMap = [
+  ///一级菜单  个人中心
   {
-    path: '/system',
+    path: '/personal',
     component: Layout,
-    redirect: '/system/article',
-    name: '功能模块',
-    meta: {title: '功能模块', icon: 'tree'},
+    redirect: '/personal/',
+    name: '',
+    meta: {title: '个人中心', icon: 'star'},
     children: [
       {
-        path: 'article',
-        name: '文章',
-        component: _import('article/article'),
-        meta: {title: '文章', icon: 'example'},
-        menu: 'article'
+        path: '',
+        name: '我的首页',
+        component: _import('personal/MyPage'),
+        meta: {title: '我的首页', icon: 'home'},
+        menu: 'MyPage'
+      },
+      {
+        path: 'MyInfo',
+        name: '我的信息',
+        component: _import('personal/MyInfo'),
+        meta: {title: '我的信息', icon: 'edit'},
+        menu: 'MyPage'
       },
     ]
   },
+
+  ///一级菜单  课程中心
   {
-    path: '/user',
+    path: '/courses',
     component: Layout,
-    redirect: '/user/',
+    redirect: '/courses/',
     name: '',
-    meta: {title: '用户权限', icon: 'table'},
+    meta: {title: '课程中心', icon: 'calendar-check'},
+    children: [
+      {
+        path: '',
+        name: '课程管理',
+        component: _import('courses/Course'),
+        meta: {title: '课程管理', icon: 'detail'},
+        menu: 'Course'
+      },
+      {
+        path: 'CourseType',
+        name: '课程种类',
+        component: _import('courses/CourseType'),
+        meta: {title: '课程种类', icon: 'gold'},
+        menu: 'CourseType'
+      },
+      {
+        path: 'CourseCalendar',
+        name: '课程日历',
+        component: _import('courses/CourseCalendar'),
+        meta: {title: '课程日历', icon: 'calendar'},
+        menu: 'CourseCalendar'
+      },
+      {
+        path: 'Class',
+        name: '班级管理',
+        component: _import('courses/Class'),
+        meta: {title: '班级管理', icon: 'team'},
+        menu: 'Class'
+      },
+      {
+        path: 'ClassPhoto',
+        name: '班级合影',
+        component: _import('courses/ClassPhoto'),
+        meta: {title: '班级合影', icon: 'camera'},
+        menu: 'ClassPhoto'
+      },
+    ]
+  },
+
+  ///一级菜单  作业中心
+  {
+    path: '/homework',
+    component: Layout,
+    redirect: '/homework/',
+    name: '',
+    meta: {title: '作业中心', icon: 'read'},
+    children: [
+      {
+        path: '',
+        name: '我的作业',
+        component: _import('homework/MyHomework'),
+        meta: {title: '我的作业', icon: 'file-word'},
+        menu: 'MyHomework'
+      },
+      {
+        path: 'HomeworkRemark',
+        name: '作业评阅',
+        component: _import('homework/HomeworkRemark'),
+        meta: {title: '作业评阅', icon: 'audit'},
+        menu: 'HomeworkRemark'
+      },
+      {
+        path: 'HomeworkStatistics',
+        name: '作业完成情况',
+        component: _import('homework/HomeworkStatistics'),
+        meta: {title: '作业完成情况', icon: 'ordered list'},
+        menu: 'HomeworkStatistics'
+      },
+    ]
+  },
+
+  ///一级菜单  系统管理
+  {
+    path: '/settings',
+    component: Layout,
+    redirect: '/settings/',
+    name: '',
+    meta: {title: '系统管理', icon: 'setting'},
     children: [
       {
         path: '',
         name: '用户列表',
         component: _import('user/user'),
-        meta: {title: '用户列表', icon: 'user'},
+        meta: {title: '用户列表', icon: 'user2'},
         menu: 'user'
       },
       {
         path: 'role',
         name: '权限管理',
         component: _import('user/role'),
-        meta: {title: '权限管理', icon: 'password'},
+        meta: {title: '权限管理', icon: 'lock'},
         menu: 'role'
       },
-    ]
-  },
-  {
-    path: '/system',
-    component: Layout,
-    redirect: '/system/article',
-    name: '功能模块',
-    meta: {title: '功能模块', icon: 'tree'},
-    children: [
       {
-        path: 'courses',
-        name: '课程',
-        component: _import('courses/courses'),
-        meta: {title: '课程', icon: 'example'},
-        menu: 'courses'
+        path: 'article',
+        name: '文章',
+        component: _import('article/article'),
+        meta: {title: '文章', icon: 'example'},
+        menu: 'article',
+        hidden: true
       },
     ]
   },
+
+
+  // {
+  //   path: '/user',
+  //   component: Layout,
+  //   redirect: '/user/',
+  //   name: '',
+  //   meta: {title: '用户权限', icon: 'table'},
+  //   children: [
+  //
+  //   ]
+  // },
+  ///原菜单
+  // {
+  //   path: '/system',
+  //   component: Layout,
+  //   redirect: '/system/article',
+  //   name: '功能模块',
+  //   meta: {title: '功能模块', icon: 'tree'},
+  //   children: [
+  //
+  //   ]
+  // },
 
   {path: '*', redirect: '/404', hidden: true}
 ]
