@@ -3,8 +3,10 @@
     <div class="filter-container">
       <el-form>
         <el-form-item>
-          <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">添加
-          </el-button>
+          <span style="margin-right: 20px;margin-left: 20px">用户名</span><el-input  style="width: 110px" v-model="input" placeholder="输入用户名"></el-input>
+          <span style="margin-right: 20px;margin-left: 20px">角色</span><el-input  style="width: 110px" v-model="input" placeholder="输入角色"></el-input>
+          <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('user:add')" @click="selectUser">查询</el-button>
+          <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">新增</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -81,6 +83,23 @@
     </el-dialog>
   </div>
 </template>
+
+const ColProps = {
+xs: 24,
+sm: 12,
+lg: 6,
+style: {
+marginBottom: 5,
+},
+}
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+  .button {
+
+
+  }
+</style>
+
 <script>
   import {mapGetters} from 'vuex'
 
@@ -194,6 +213,16 @@
           this.dialogFormVisible = false
         })
       },
+      selectUser() {
+        let _vue = this;
+        this.api({
+          url: "",
+          method: "get",
+          data: this.tempUser,
+        }).then(()=>{
+
+        })
+      },
       updateUser() {
         //修改用户信息
         let _vue = this;
@@ -240,3 +269,4 @@
     }
   }
 </script>
+
