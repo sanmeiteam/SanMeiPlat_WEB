@@ -27,3 +27,29 @@
     }
   }
 }
+
+///////////
+//自定义样式
+///////////
+
+//表格 表头样式
+ .el-table th{
+   height:45px;
+   background-color:#fafaff;
+   border-top:solid 1px #eeeeee;
+ }
+
+//表格 行样式
+.el-table tr{
+  height:45px;
+}
+
+//表格 单元格样式
+ .el-table td {
+  padding:0px;
+ }
+ // 按钮样式
+ .el-button {
+   height:35px;
+   line-height: 0px;
+ }

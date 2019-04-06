@@ -1,23 +1,29 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-form>
-        <el-form-item>
-          <span style="margin-right: 20px;margin-left: 20px">用户名</span><el-input  style="width: 110px" v-model="input" placeholder="输入用户名"></el-input>
-          <span style="margin-right: 20px;margin-left: 20px">角色</span><el-input  style="width: 110px" v-model="input" placeholder="输入角色"></el-input>
-          <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('user:add')" @click="selectUser">查询</el-button>
-          <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">新增</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="拼命加载中" border fit
-              highlight-current-row>
+    <el-form>
+      <el-form-item>
+        <div class="filter-container">
+          <div class="left-items" style="float: left;">
+            <span style="margin-right: 20px;margin-left: 20px">用户名</span>
+            <el-input  style="width: 110px" v-model="input" placeholder="输入用户名"></el-input>
+            <span style="margin-right: 20px;margin-left: 20px">角色</span>
+            <el-input  style="width: 110px" v-model="input" placeholder="输入角色"></el-input>
+            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('user:list')" @click="selectUser">查询</el-button>
+          </div>
+          <div class="right-imtes" style="float:right;">
+            <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">新增</el-button>
+          </div>
+        </div>
+      </el-form-item>
+    </el-form>
+    <el-table :data="list"
+              v-loading.body="listLoading" element-loading-text="拼命加载中" border fit highlight-current-row>
       <el-table-column align="center" label="序号" width="80">
         <template slot-scope="scope">
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="昵称" prop="nickname" style="width: 60px;"></el-table-column>
+      <el-table-column align="center" label="姓名" prop="nickname" style="width: 60px;"></el-table-column>
       <el-table-column align="center" label="用户名" prop="username" style="width: 60px;"></el-table-column>
       <el-table-column align="center" label="角色" width="100">
         <template slot-scope="scope">
@@ -25,6 +31,10 @@
           <el-tag type="primary" v-text="scope.row.roleName" v-else></el-tag>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="性别" prop="sex" width="60"></el-table-column>
+      <el-table-column align="center" label="年龄" prop="age" width="60"></el-table-column>
+      <el-table-column align="center" label="区域" prop="aera" width="100"></el-table-column>
+      <el-table-column align="center" label="学历" prop="education" width="100"></el-table-column>
       <el-table-column align="center" label="创建时间" prop="createTime" width="170"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="170"></el-table-column>
       <el-table-column align="center" label="管理" width="220" v-if="hasPerm('user:update')">
@@ -95,7 +105,6 @@ marginBottom: 5,
 
 <style rel="stylesheet/scss" lang="scss" scoped>
   .button {
-
 
   }
 </style>
