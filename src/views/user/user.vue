@@ -4,11 +4,17 @@
       <el-form-item>
         <div class="filter-container">
           <div class="left-items" style="float: left;">
-            <span style="margin-right: 20px;margin-left: 20px">用户名</span>
-            <el-input  style="width: 110px" v-model="input" placeholder="输入用户名"></el-input>
-            <span style="margin-right: 20px;margin-left: 20px">角色</span>
-            <el-input  style="width: 110px" v-model="input" placeholder="输入角色"></el-input>
-            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('user:list')" @click="selectUser">查询</el-button>
+            <el-input  style="width: 250px" v-model="listQuery.keywords" placeholder="输入关键字" @keyup.enter.native="getList"></el-input>
+            <el-select v-model="listQuery.roleId" placeholder="按角色查询" style="width:150px;" @change="getList">
+              <el-option label="所有角色" value=""></el-option>
+              <el-option
+                v-for="item in roles"
+                :key="item.roleId"
+                :label="item.roleName"
+                :value="item.roleId">
+              </el-option>
+            </el-select>
+            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('user:list')" @click="getList">查询</el-button>
           </div>
           <div class="right-imtes" style="float:right;">
             <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">新增</el-button>
@@ -56,34 +62,104 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form class="small-space" :model="tempUser" label-position="left" label-width="80px"
-               style='width: 300px; margin-left:50px;'>
-        <el-form-item label="用户名" required v-if="dialogStatus=='create'">
-          <el-input type="text" v-model="tempUser.username">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="密码" v-if="dialogStatus=='create'" required>
-          <el-input type="password" v-model="tempUser.password">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="新密码" v-else>
-          <el-input type="password" v-model="tempUser.password" placeholder="不填则表示不修改">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="角色" required>
-          <el-select v-model="tempUser.roleId" placeholder="请选择">
-            <el-option
-              v-for="item in roles"
-              :key="item.roleId"
-              :label="item.roleName"
-              :value="item.roleId">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="昵称" required>
-          <el-input type="text" v-model="tempUser.nickname">
-          </el-input>
-        </el-form-item>
+      <el-form class="small-space" :model="tempUser" label-position="right" label-width="120px"
+               style='width: 650px; margin-left:50px; margin-right:50px;'>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="用户名" required v-if="dialogStatus=='create'">
+              <el-input type="text" v-model="tempUser.username">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="密码" v-if="dialogStatus=='create'" required>
+              <el-input type="password" v-model="tempUser.password">
+              </el-input>
+            </el-form-item>
+            <el-form-item label="新密码" v-else>
+              <el-input type="password" v-model="tempUser.password" placeholder="不填则表示不修改">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="角色" required>
+              <el-select v-model="tempUser.roleId" placeholder="请选择">
+                <el-option
+                  v-for="item in roles"
+                  :key="item.roleId"
+                  :label="item.roleName"
+                  :value="item.roleId">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="昵称" required>
+              <el-input type="text" v-model="tempUser.nickname">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="性别" required>
+              <el-select v-model="tempUser.sex" placeholder="请选择">
+                <el-option label="男" value="男"></el-option>
+                <el-option label="女" value="女"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="年龄" required>
+              <el-input type="text" v-model="tempUser.age">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="电话" required>
+              <el-input type="text" v-model="tempUser.phone">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="学历">
+              <el-input type="text" v-model="tempUser.education">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="QQ">
+              <el-input type="text" v-model="tempUser.qq">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="微信">
+              <el-input type="text" v-model="tempUser.wechat">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="区域">
+              <el-input type="text" v-model="tempUser.aera">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="介绍人">
+              <el-input type="text" v-model="tempUser.introducer">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -121,6 +197,8 @@ marginBottom: 5,
         listQuery: {
           pageNum: 1,//页码
           pageRow: 50,//每页条数
+          keywords:'', //关键字查询
+          roleId:'',//角色id
         },
         roles: [],//角色列表
         dialogStatus: 'create',
@@ -129,10 +207,21 @@ marginBottom: 5,
           update: '编辑',
           create: '新建用户'
         },
+        input:{
+          keywords:''
+        },
         tempUser: {
           username: '',
           password: '',
           nickname: '',
+          sex: '',
+          age: '',
+          phone: '',
+          qq: '',
+          wechat: '',
+          aera: '',
+          education: '',
+          introducer: '',
           roleId: '',
           userId: ''
         }
@@ -195,6 +284,14 @@ marginBottom: 5,
         this.tempUser.username = "";
         this.tempUser.password = "";
         this.tempUser.nickname = "";
+        this.tempUser.sex = "";
+        this.tempUser.age = "";
+        this.tempUser.phone = "";
+        this.tempUser.qq = "";
+        this.tempUser.wechat = "";
+        this.tempUser.aera = "";
+        this.tempUser.education = "";
+        this.tempUser.introducer = "";
         this.tempUser.roleId = "";
         this.tempUser.userId = "";
         this.dialogStatus = "create"
@@ -204,6 +301,14 @@ marginBottom: 5,
         let user = this.list[$index];
         this.tempUser.username = user.username;
         this.tempUser.nickname = user.nickname;
+        this.tempUser.sex = user.sex;
+        this.tempUser.age = user.age;
+        this.tempUser.phone = user.phone;
+        this.tempUser.qq = user.qq;
+        this.tempUser.wechat = user.wechat;
+        this.tempUser.aera = user.aera;
+        this.tempUser.education = user.education;
+        this.tempUser.introducer = user.introducer;
         this.tempUser.roleId = user.roleId;
         this.tempUser.userId = user.userId;
         this.tempUser.deleteStatus = '1';
@@ -220,16 +325,6 @@ marginBottom: 5,
         }).then(() => {
           this.getList();
           this.dialogFormVisible = false
-        })
-      },
-      selectUser() {
-        let _vue = this;
-        this.api({
-          url: "",
-          method: "get",
-          data: this.tempUser,
-        }).then(()=>{
-
         })
       },
       updateUser() {
