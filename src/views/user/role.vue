@@ -10,25 +10,27 @@
     </div>
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="拼命加载中" border fit
               highlight-current-row>
-      <el-table-column align="center" label="序号" width="80">
+      <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="角色" prop="roleName" width="150"></el-table-column>
+      <el-table-column align="center" label="角色" prop="roleName" width="100"></el-table-column>
       <el-table-column align="center" label="用户">
         <template slot-scope="scope">
-          <div v-for="user in scope.row.users">
-            <div v-text="user.nickname" style="display: inline-block;vertical-align: middle;"></div>
-          </div>
+          <span v-for="user in scope.row.users">
+            <span v-text="user.nickname"
+                  style="display: inline-block;vertical-align: middle;margin-left:5px;margin-right:5px;padding:3px 5px 3px 5px;border:solid 1px gray;">
+            </span>
+          </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="菜单&权限" width="420">
+      <el-table-column align="center" label="菜单&权限" width="500">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.roleName==adminName" type="success">全部</el-tag>
           <div v-else>
             <div v-for="menu in scope.row.menus" style="text-align: left">
-              <span style="width: 100px;display: inline-block;text-align: right ">{{menu.menuName}}</span>
+              <span style="width: 160px;display: inline-block;text-align: right ">{{menu.menuName}}</span>
               <el-tag v-for="perm in menu.permissions" :key="perm.permissionName" v-text="perm.permissionName"
                       style="margin-right: 3px;"
                       type="primary"></el-tag>
@@ -36,7 +38,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('role:update') ||hasPerm('role:delete') ">
+      <el-table-column align="center" label="管理" width="100" v-if="hasPerm('role:update') ||hasPerm('role:delete') ">
         <template slot-scope="scope">
           <div v-if="scope.row.roleName!='管理员'">
             <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)" v-if="hasPerm('role:update')">修改
@@ -52,16 +54,16 @@
     </el-table>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form class="small-space" :model="tempRole" label-position="left" label-width="100px"
-               style='width: 600px; margin-left:50px;'>
+               style='width: 700px; margin-left:50px;'>
         <el-form-item label="角色名称" required>
           <el-input type="text" v-model="tempRole.roleName" style="width: 250px;">
           </el-input>
         </el-form-item>
         <el-form-item label="菜单&权限" required>
           <div v-for=" (menu,_index) in allPermission" :key="menu.menuName">
-            <span style="width: 100px;display: inline-block;">
+            <span style="width: 180px;display: inline-block;">
               <el-button :type="isMenuNone(_index)?'':(isMenuAll(_index)?'success':'primary')" size="mini"
-                         style="width:80px;"
+                         style="width:160px;"
                          @click="checkAll(_index)">{{menu.menuName}}</el-button>
             </span>
             <div style="display: inline-block;margin-left:20px;">
