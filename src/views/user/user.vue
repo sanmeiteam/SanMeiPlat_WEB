@@ -4,7 +4,8 @@
       <el-form-item>
         <div class="filter-container">
           <div class="left-items" style="float: left;">
-            <el-input  style="width: 250px" v-model="listQuery.keywords" placeholder="输入关键字" @keyup.enter.native="getList"></el-input>
+            <el-input style="width: 250px" v-model="listQuery.keywords" placeholder="输入关键字"
+                      @keyup.enter.native="getList"></el-input>
             <el-select v-model="listQuery.roleId" placeholder="按角色查询" style="width:150px;" @change="getList">
               <el-option label="所有角色" value=""></el-option>
               <el-option
@@ -14,12 +15,25 @@
                 :value="item.roleId">
               </el-option>
             </el-select>
-            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('user:list')" @click="getList">查询</el-button>
+            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('user:list')"
+                       @click="getList">查询
+            </el-button>
           </div>
-          <div class="right-imtes" style="float:right;">
-            <a href="javascript:;" class="file">导入表格
-              <input id="upload" type="file" @change="importfxx(this)"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-            </a>
+          <div class="right-imtes" style="float:right; margin-right: 100px">
+            <!--<a href="javascript:;" class="file">导入表格-->
+            <!--<input id="upload" type="file" @change="importfxx(this)"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />-->
+            <!--</a>-->
+            <div style="margin-right: 200px">
+              <el-upload
+                class="file"
+                action="api/user/importUserExcel"
+                multiple="true"
+                accept="*.xls"
+                :limit="1"
+                :file-list="fileList">
+                <el-button size="small" type="primary">批量导入</el-button>
+              </el-upload>
+            </div>
             <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">新增</el-button>
             <el-button type="primary" @click="exportTable">导出Excel</el-button>
           </div>
@@ -201,8 +215,8 @@ marginBottom: 5,
         listQuery: {
           pageNum: 1,//页码
           pageRow: 50,//每页条数
-          keywords:'', //关键字查询
-          roleId:'',//角色id
+          keywords: '', //关键字查询
+          roleId: '',//角色id
         },
         roles: [],//角色列表
         dialogStatus: 'create',
@@ -211,8 +225,8 @@ marginBottom: 5,
           update: '编辑',
           create: '新建用户'
         },
-        input:{
-          keywords:''
+        input: {
+          keywords: ''
         },
         tempUser: {
           username: '',
@@ -374,11 +388,11 @@ marginBottom: 5,
           })
         })
       },
-      exportTable(){
+      exportTable() {
         require.ensure([], () => {
-          const { export_json_to_excel } = require('../../excel/Export2Excel'); //这里必须使用绝对路径
-          const tHeader = ['id','姓名', '用户名', '角色id','性别','年龄','电话','QQ','微信','区域','学历','介绍人','更新时间','创建时间']; // 导出的表头名
-          const filterVal = ['userId','nickname','username', 'roleId','sex','age','phone','qq','wechat','aera','education','introducer','updateTime','createTime']; // 导出的表头字段名
+          const {export_json_to_excel} = require('../../excel/Export2Excel'); //这里必须使用绝对路径
+          const tHeader = ['id', '姓名', '用户名', '角色id', '性别', '年龄', '电话', 'QQ', '微信', '区域', '学历', '介绍人', '更新时间', '创建时间']; // 导出的表头名
+          const filterVal = ['userId', 'nickname', 'username', 'roleId', 'sex', 'age', 'phone', 'qq', 'wechat', 'aera', 'education', 'introducer', 'updateTime', 'createTime']; // 导出的表头字段名
           const list = this.list;
           const data = this.formatJson(filterVal, list);
           export_json_to_excel(tHeader, data, `人员信息表`);// 导出的表格名称，根据需要自己命名
@@ -396,21 +410,21 @@ marginBottom: 5,
         var f = this.file;
         var reader = new FileReader();
         //if (!FileReader.prototype.readAsBinaryString) {
-        FileReader.prototype.readAsBinaryString = function(f) {
+        FileReader.prototype.readAsBinaryString = function (f) {
           var binary = "";
           var rABS = false; //是否将文件读取为二进制字符串
           var pt = this;
           var wb; //读取完成的数据
           var outdata;
           var reader = new FileReader();
-          reader.onload = function(e) {
+          reader.onload = function (e) {
             var bytes = new Uint8Array(reader.result);
             var length = bytes.byteLength;
-            for(var i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++) {
               binary += String.fromCharCode(bytes[i]);
             }
             var XLSX = require('xlsx');
-            if(rABS) {
+            if (rABS) {
               wb = XLSX.read(btoa(fixdata(binary)), { //手动转化
                 type: 'base64'
               });
@@ -454,7 +468,7 @@ marginBottom: 5,
           }
           reader.readAsArrayBuffer(f);
         }
-        if(rABS) {
+        if (rABS) {
           reader.readAsArrayBuffer(f);
         } else {
           reader.readAsBinaryString(f);
