@@ -18,24 +18,20 @@
             <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('user:list')"
                        @click="getList">查询
             </el-button>
-          </div>
-          <div class="right-imtes" style="float:right; margin-right: 100px">
-            <!--<a href="javascript:;" class="file">导入表格-->
-            <!--<input id="upload" type="file" @change="importfxx(this)"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />-->
-            <!--</a>-->
-            <div style="margin-right: 200px">
-              <el-upload
-                class="file"
-                action="api/user/importUserExcel"
-                multiple="true"
-                accept="*.xls"
-                :limit="1"
-                :file-list="fileList">
-                <el-button size="small" type="primary">批量导入</el-button>
-              </el-upload>
-            </div>
             <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">新增</el-button>
-            <el-button type="primary" @click="exportTable">导出Excel</el-button>
+            <el-button type="primary" @click="exportTable">导出</el-button>
+          </div>
+          <div style="float:left; margin-left:20px">
+            <el-upload
+              class="upload-demo"
+              action="api/user/importUserExcel"
+              :multiple="false"
+              :limit="1"
+              :on-exceed="handleExceed"
+              :show-file-list="false"
+            >
+              <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
           </div>
         </div>
       </el-form-item>
@@ -47,7 +43,7 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="姓名" prop="nickname" style="width: 60px;"></el-table-column>
+      <el-table-column align="center" label="姓名" prop="realName" style="width: 60px;"></el-table-column>
       <el-table-column align="center" label="用户名" prop="username" style="width: 60px;"></el-table-column>
       <el-table-column align="center" label="角色" width="100">
         <template slot-scope="scope">
@@ -257,6 +253,10 @@ marginBottom: 5,
       ])
     },
     methods: {
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
+
       getAllRoles() {
         this.api({
           url: "/user/getAllRoles",
