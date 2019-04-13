@@ -14,12 +14,20 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="昵称" prop="nickname" style="width: 60px;"></el-table-column>
-      <el-table-column align="center" label="用户名" prop="username" style="width: 60px;"></el-table-column>
-      <el-table-column align="center" label="角色" width="100">
+      <el-table-column align="center" label="课程名称" prop="courseName" width="100" ></el-table-column>
+      <el-table-column align="center" label="课程期数" prop="courseNumber" ></el-table-column>
+      <el-table-column align="center" label="课程类型" prop="courseTypeId" ></el-table-column>
+      <el-table-column align="center" label="课程类型" prop="courseType" ></el-table-column>
+      <el-table-column align="center" label="授课老师" prop="teacher" ></el-table-column>
+      <el-table-column align="center" label="报名老师" prop="signTeacher" ></el-table-column>
+      <el-table-column align="center" label="开始时间" prop="startTime" ></el-table-column>
+      <el-table-column align="center" label="报名电话" prop="signTel" ></el-table-column>
+      <el-table-column align="center" label="地址" prop="address" ></el-table-column>
+      <el-table-column align="center" label="承办方" prop="organizer" ></el-table-column>
+      <el-table-column align="center" label="是否有效">
         <template slot-scope="scope">
-          <el-tag type="success" v-text="scope.row.roleName" v-if="scope.row.roleId===1"></el-tag>
-          <el-tag type="primary" v-text="scope.row.roleName" v-else></el-tag>
+          <span v-if="scope.row.deleteStatus == 1">有效</span>
+          <span v-else>无效</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" prop="createTime" width="170"></el-table-column>
@@ -133,13 +141,13 @@
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/user/list",
+          url: "/CosCourses/selectCosCourses",
           method: "get",
           params: this.listQuery
         }).then(data => {
           this.listLoading = false;
-          this.list = data.list;
-          this.totalCount = data.totalCount;
+          this.list = data.result;
+//          this.totalCount = data.totalCount;
         })
       },
       handleSizeChange(val) {
