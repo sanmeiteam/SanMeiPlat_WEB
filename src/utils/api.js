@@ -24,7 +24,9 @@ service.interceptors.response.use(
     }
     if (res.code == '100') {
       return res.info;
-    } else if (res.code == "20011") {
+    } else if (res.success) {
+      return res;
+    }else if (res.code == "20011") {
       Message({
         showClose: true,
         message: res.msg,
