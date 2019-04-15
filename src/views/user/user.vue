@@ -19,7 +19,7 @@
                        @click="getList">查询
             </el-button>
             <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">新增</el-button>
-            <el-button type="primary" @click="exportTable">导出</el-button>
+            <el-button type="primary" @click="exportTable" v-if="hasPerm('user:list')">导出</el-button>
           </div>
           <div style="float:left; margin-left: 20px;">
             <el-upload
@@ -286,17 +286,17 @@ marginBottom: 5,
       },
       handleSizeChange(val) {
         //改变每页数量
-        this.listQuery.pageRow = val
+        this.listQuery.pageRow = val;
         this.handleFilter();
       },
       handleCurrentChange(val) {
         //改变页码
-        this.listQuery.pageNum = val
+        this.listQuery.pageNum = val;
         this.getList();
       },
       handleFilter() {
         //查询事件
-        this.listQuery.pageNum = 1
+        this.listQuery.pageNum = 1;
         this.getList()
       },
       getIndex($index) {
@@ -318,7 +318,7 @@ marginBottom: 5,
         this.tempUser.introducer = "";
         this.tempUser.roleId = "";
         this.tempUser.userId = "";
-        this.dialogStatus = "create"
+        this.dialogStatus = "create";
         this.dialogFormVisible = true
       },
       showUpdate($index) {
@@ -337,7 +337,7 @@ marginBottom: 5,
         this.tempUser.userId = user.userId;
         this.tempUser.deleteStatus = '1';
         this.tempUser.password = '';
-        this.dialogStatus = "update"
+        this.dialogStatus = "update";
         this.dialogFormVisible = true
       },
       createUser() {

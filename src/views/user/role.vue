@@ -29,16 +29,16 @@
         <template slot-scope="scope">
           <el-tag v-if="scope.row.roleName==adminName" type="success">全部</el-tag>
           <div v-else>
-            <div v-for="menu in scope.row.menus" style="text-align: left">
+            <div v-for="menu in scope.row.menus" style="text-align: left;line-height:38px;">
               <span style="width: 160px;display: inline-block;text-align: right ">{{menu.menuName}}</span>
               <el-tag v-for="perm in menu.permissions" :key="perm.permissionName" v-text="perm.permissionName"
-                      style="margin-right: 3px;"
+                      style="margin-right: 7px;"
                       type="primary"></el-tag>
             </div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="管理" width="100" v-if="hasPerm('role:update') ||hasPerm('role:delete') ">
+      <el-table-column align="center" label="管理" width="200" v-if="hasPerm('role:update') ||hasPerm('role:delete') ">
         <template slot-scope="scope">
           <div v-if="scope.row.roleName!='管理员'">
             <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)" v-if="hasPerm('role:update')">修改
