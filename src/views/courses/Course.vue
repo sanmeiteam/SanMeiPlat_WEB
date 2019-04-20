@@ -2,7 +2,34 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form>
+        <el-row>
+          <el-col :span="5">
+            <el-form-item label="课程名称" prop="courseName">
+              <el-input v-model="params.courseName" style="width: 170px" @keyup.enter.native="selectCourse"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="5">
+            <el-form-item label="课程类型" prop="courseType">
+              <el-select v-model="params.courseType">
+                <el-option></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="5">
+            <el-form-item label="授课老师">
+              <el-select v-model="params.teacher" >
+                <el-option></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="5">
+            <el-form-item label="开始时间" prop="startTime">
+              <el-date-picker type="date" value-format="yyyy-MM-dd"  v-model="params.startTime"></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item>
+          <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="selectCourse">查询</el-button>
           <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">添加</el-button>
         </el-form-item>
       </el-form>
@@ -14,25 +41,18 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="课程名称" prop="courseName" width="100" ></el-table-column>
-      <el-table-column align="center" label="课程期数" prop="courseNumber" ></el-table-column>
-      <el-table-column align="center" label="课程类型" prop="courseTypeId" ></el-table-column>
-      <el-table-column align="center" label="课程类型" prop="courseType" ></el-table-column>
-      <el-table-column align="center" label="授课老师" prop="teacher" ></el-table-column>
-      <el-table-column align="center" label="报名老师" prop="signTeacher" ></el-table-column>
-      <el-table-column align="center" label="开始时间" prop="startTime" ></el-table-column>
-      <el-table-column align="center" label="报名电话" prop="signTel" ></el-table-column>
-      <el-table-column align="center" label="地址" prop="address" ></el-table-column>
-      <el-table-column align="center" label="承办方" prop="organizer" ></el-table-column>
-      <el-table-column align="center" label="是否有效">
-        <template slot-scope="scope">
-          <span v-if="scope.row.deleteStatus == 1">有效</span>
-          <span v-else>无效</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="创建时间" prop="createTime" width="170"></el-table-column>
-      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="170"></el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('user:update')">
+      <el-table-column align="center" label="课程名称" :fixed="true" prop="courseName" width="200"></el-table-column>
+      <el-table-column align="center" label="课程期数" prop="courseNumber"></el-table-column>
+      <el-table-column align="center" label="课程类型" prop="courseType" width="150"></el-table-column>
+      <el-table-column align="center" label="授课老师" prop="teacher"></el-table-column>
+      <el-table-column align="center" label="报名老师" prop="signTeacher"></el-table-column>
+      <el-table-column align="center" label="开始时间" prop="startTime" width="120"></el-table-column>
+      <el-table-column align="center" label="报名电话" prop="signTel" width="130"></el-table-column>
+      <el-table-column align="center" label="地址" prop="address" width="150"></el-table-column>
+      <el-table-column align="center" label="承办方" prop="organizer"></el-table-column>
+      <el-table-column align="center" label="创建时间" prop="createTime" width="120"></el-table-column>
+      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
+      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('user:update')">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
           <el-button type="danger" icon="delete" v-if="scope.row.userId!=userId "
@@ -50,42 +70,42 @@
       :page-sizes="[10, 20, 50, 100]"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form class="small-space" :model="tempUser" label-position="left" label-width="80px"
-               style='width: 300px; margin-left:50px;'>
-        <el-form-item label="用户名" required v-if="dialogStatus=='create'">
-          <el-input type="text" v-model="tempUser.username">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="密码" v-if="dialogStatus=='create'" required>
-          <el-input type="password" v-model="tempUser.password">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="新密码" v-else>
-          <el-input type="password" v-model="tempUser.password" placeholder="不填则表示不修改">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="角色" required>
-          <el-select v-model="tempUser.roleId" placeholder="请选择">
-            <el-option
-              v-for="item in roles"
-              :key="item.roleId"
-              :label="item.roleName"
-              :value="item.roleId">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="昵称" required>
-          <el-input type="text" v-model="tempUser.nickname">
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="success" @click="createUser">创 建</el-button>
-        <el-button type="primary" v-else @click="updateUser">修 改</el-button>
-      </div>
-    </el-dialog>
+    <!--<el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">-->
+    <!--<el-form class="small-space" :model="tempUser" label-position="left" label-width="80px"-->
+    <!--style='width: 300px; margin-left:50px;'>-->
+    <!--<el-form-item label="用户名" required v-if="dialogStatus=='create'">-->
+    <!--<el-input type="text" v-model="tempUser.username">-->
+    <!--</el-input>-->
+    <!--</el-form-item>-->
+    <!--<el-form-item label="密码" v-if="dialogStatus=='create'" required>-->
+    <!--<el-input type="password" v-model="tempUser.password">-->
+    <!--</el-input>-->
+    <!--</el-form-item>-->
+    <!--<el-form-item label="新密码" v-else>-->
+    <!--<el-input type="password" v-model="tempUser.password" placeholder="不填则表示不修改">-->
+    <!--</el-input>-->
+    <!--</el-form-item>-->
+    <!--<el-form-item label="角色" required>-->
+    <!--<el-select v-model="tempUser.roleId" placeholder="请选择">-->
+    <!--<el-option-->
+    <!--v-for="item in roles"-->
+    <!--:key="item.roleId"-->
+    <!--:label="item.roleName"-->
+    <!--:value="item.roleId">-->
+    <!--</el-option>-->
+    <!--</el-select>-->
+    <!--</el-form-item>-->
+    <!--<el-form-item label="昵称" required>-->
+    <!--<el-input type="text" v-model="tempUser.nickname">-->
+    <!--</el-input>-->
+    <!--</el-form-item>-->
+    <!--</el-form>-->
+    <!--<div slot="footer" class="dialog-footer">-->
+    <!--<el-button @click="dialogFormVisible = false">取 消</el-button>-->
+    <!--<el-button v-if="dialogStatus=='create'" type="success" @click="createUser">创 建</el-button>-->
+    <!--<el-button type="primary" v-else @click="updateUser">修 改</el-button>-->
+    <!--</div>-->
+    <!--</el-dialog>-->
   </div>
 </template>
 <script>
@@ -108,12 +128,11 @@
           update: '编辑',
           create: '新建用户'
         },
-        tempUser: {
-          username: '',
-          password: '',
-          nickname: '',
-          roleId: '',
-          userId: ''
+        params: {
+          courseName: '',
+          courseType: '',
+          teacher: '',
+          startTime: '',
         }
       }
     },
@@ -169,6 +188,17 @@
         //表格序号
         return (this.listQuery.pageNum - 1) * this.listQuery.pageRow + $index + 1
       },
+
+      selectCourse() {
+        this.api({
+          url: "/CosCourses/selectCosCourses",
+          method: "get",
+          params: this.params
+        }).then(data=>{
+          this.list = data.result;
+        });
+      },
+
       showCreate() {
         //显示新增对话框
         this.tempUser.username = "";
