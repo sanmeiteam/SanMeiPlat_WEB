@@ -21,17 +21,6 @@
             <el-button type="primary" icon="plus" v-if="hasPerm('class:add')" @click="showCreate">新增</el-button>
             <el-button type="primary" @click="exportTable" v-if="hasPerm('class:list')">导出</el-button>
           </div>
-          <div style="float:left; margin-left: 20px;">
-            <el-upload
-              class="upload-demo"
-              action="api/user/importUserExcel"
-              :multiple="false"
-              :on-success="onSuccess"
-              limit="100"
-              :show-file-list="false">
-              <el-button v-if="hasPerm('class:importExcel')" size="small" type="primary">点击上传</el-button>
-            </el-upload>
-          </div>
         </div>
       </el-form-item>
     </el-form>
@@ -194,7 +183,7 @@ marginBottom: 5,
       }
     },
     created() {
-      this.getCourses(); //获取所有课程信息
+      //this.getCourses(); //获取所有课程信息
       //获取当前课程
       this.getList(); //获取班级内人员信息
     },
@@ -222,7 +211,7 @@ marginBottom: 5,
           params: this.listQuery
         }).then(data => {
           this.listLoading = false;
-          this.list = data.list;
+          this.list = data.result;
           this.totalCount = data.totalCount;
         })
       },
