@@ -4,9 +4,15 @@
       <el-form-item>
         <div class="filter-container">
           <div class="left-items" style="float: left;">
-
-            <el-input style="width: 250px" v-model="listQuery.keywords" placeholder="输入关键字"
-                      @keyup.enter.native="getList"></el-input>
+            <el-select v-model="listQuery.courseId" placeholder="选择课程" style="width:250px;" @change="getList">
+              <el-option label="请选择课程" value=""></el-option>
+              <el-option
+                v-for="item in courses"
+                :key="item.id"
+                :label="item.courseName"
+                :value="item.id">
+              </el-option>
+            </el-select>
             <el-select v-model="listQuery.role" placeholder="按角色查询" style="width:150px;" @change="getList">
               <el-option label="所有角色" value=""></el-option>
               <el-option label="讲师" value="讲师"></el-option>
@@ -15,6 +21,8 @@
               <el-option label="组长" value="组长"></el-option>
               <el-option label="学员" value="学员"></el-option>
             </el-select>
+            <el-input style="width: 200px" v-model="listQuery.keywords" placeholder="输入关键字"
+                      @keyup.enter.native="getList"></el-input>
             <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('class:list')"
                        @click="getList">查询
             </el-button>
@@ -31,15 +39,15 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="课程" prop="courseName" style="width: 120px;"></el-table-column>
-      <el-table-column align="center" label="账号" prop="username"></el-table-column>
-      <el-table-column align="center" label="姓名" prop="nickname"></el-table-column>
-      <el-table-column align="center" label="性别" prop="sex" style="width: 60px;"></el-table-column>
-      <el-table-column align="center" label="角色" prop="role" style="width: 60px;"></el-table-column>
-      <el-table-column align="center" label="是否复训" prop="oldMember" style="width: 60px;"></el-table-column>
-      <el-table-column align="center" label="分数" prop="score" style="width: 60px;"></el-table-column>
-      <el-table-column align="center" label="创建时间" prop="createTime" width="170"></el-table-column>
-      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="170"></el-table-column>
+      <el-table-column align="center" label="课程" prop="courseName"></el-table-column>
+      <el-table-column align="center" label="账号" prop="username" width="180"></el-table-column>
+      <el-table-column align="center" label="姓名" prop="nickname" width="100"></el-table-column>
+      <el-table-column align="center" label="性别" prop="sex" width="80"></el-table-column>
+      <el-table-column align="center" label="角色" prop="role" width="100"></el-table-column>
+      <el-table-column align="center" label="是否复训" prop="oldMember" width="100"></el-table-column>
+      <el-table-column align="center" label="分数" prop="score" width="80"></el-table-column>
+      <el-table-column align="center" label="创建时间" prop="createTime" width="150"></el-table-column>
+      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="150"></el-table-column>
       <el-table-column align="center" label="管理" width="220" v-if="hasPerm('class:update')">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
@@ -155,18 +163,14 @@ marginBottom: 5,
           pageRow: 50,//每页条数
           keywords: '', //关键字查询
           role: '',//角色 班内角色
+          courseId:'',
         },
-        curCourseId:'',
-        curCourseName:'',
         courses:[], //课程列表
         dialogStatus: 'create',
         dialogFormVisible: false,
         textMap: {
           update: '编辑',
           create: '添加'
-        },
-        input: {
-          keywords: ''
         },
         tempData: {
           id:'',
@@ -183,7 +187,7 @@ marginBottom: 5,
       }
     },
     created() {
-      //this.getCourses(); //获取所有课程信息
+      this.getCourses(); //获取所有课程信息
       //获取当前课程
       this.getList(); //获取班级内人员信息
     },
@@ -199,7 +203,7 @@ marginBottom: 5,
           url: "/CosClass/getCourses",
           method: "get"
         }).then(data => {
-          this.courses = data.list;
+          this.courses = data.result;
         })
       },
       getList() {
