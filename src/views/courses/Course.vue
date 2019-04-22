@@ -41,16 +41,14 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="课程名称" :fixed="true" prop="courseName" width="200"></el-table-column>
-      <el-table-column align="center" label="课程期数" prop="courseNumber"></el-table-column>
-      <el-table-column align="center" label="课程类型" prop="courseType" width="150"></el-table-column>
-      <el-table-column align="center" label="授课老师" prop="teacher"></el-table-column>
-      <el-table-column align="center" label="报名老师" prop="signTeacher"></el-table-column>
-      <el-table-column align="center" label="开始时间" prop="startTime" width="120"></el-table-column>
-      <el-table-column align="center" label="报名电话" prop="signTel" width="130"></el-table-column>
-      <el-table-column align="center" label="地址" prop="address" width="150"></el-table-column>
-      <el-table-column align="center" label="承办方" prop="organizer"></el-table-column>
-      <el-table-column align="center" label="创建时间" prop="createTime" width="120"></el-table-column>
+      <el-table-column align="center" label="课程名称" prop="courseName" width="200"></el-table-column>
+      <el-table-column align="center" label="授课老师" prop="teacher" width="100"></el-table-column>
+      <el-table-column align="center" label="开始时间" prop="startTime" width="100"></el-table-column>
+      <el-table-column align="center" label="承办方" prop="organizer" width="160"></el-table-column>
+      <el-table-column align="center" label="地址" prop="address"></el-table-column>
+      <el-table-column align="center" label="报名老师" prop="signTeacher" width="100"></el-table-column>
+      <el-table-column align="center" label="报名电话" prop="signTel" width="120"></el-table-column>
+      <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
       <el-table-column align="center" label="管理" width="180" v-if="hasPerm('user:update')">
         <template slot-scope="scope">
