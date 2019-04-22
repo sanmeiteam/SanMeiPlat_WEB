@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-form>
         <el-form-item label="课程种类">
-          <el-select v-model="listQuery.id" :clearable="true" placeholder="请选择课程种类">
+          <el-select :filterable="true" v-model="listQuery.id" :clearable="true" placeholder="请选择课程种类">
             <el-option v-for="item in list" :key="item.id" :label="item.courseType" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
