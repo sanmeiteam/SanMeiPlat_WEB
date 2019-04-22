@@ -26,8 +26,8 @@
             <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('class:list')"
                        @click="getList">查询
             </el-button>
-            <el-button type="primary" icon="plus" v-if="hasPerm('class:add')" @click="showCreate">新增</el-button>
-            <el-button type="primary" @click="exportTable" v-if="hasPerm('class:list')">导出</el-button>
+            <el-button type="primary" icon="plus" v-if="hasPerm('class:add')&&listQuery.courseId>''" @click="showCreate">新增</el-button>
+            <el-button type="primary" @click="exportTable" v-if="hasPerm('class:list')&&listQuery.courseId>''">导出</el-button>
           </div>
         </div>
       </el-form-item>
@@ -71,33 +71,12 @@
                style='width: 650px; margin-left:50px; margin-right:50px;'>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="课程/班级" required>
-              <el-input type="text" v-model="tempData.courseName">
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="姓名" required>
-              <el-input type="text" v-model="tempData.nickname">
-              </el-input>
+              <el-select :filterable="true" v-model="tempData.userId" :clearable="true" placeholder="请输入姓名">
+                <el-option v-for="item in userList" :key="item.id" :label="item.nickname+' ( '+item.userName+' ) - '+item.sex" :value="item.id"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="账号" required>
-              <el-input type="text" v-model="tempData.username">
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="性别" required>
-              <el-input type="text" v-model="tempData.sex">
-              </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="角色" required>
               <el-select v-model="tempData.role" placeholder="请选择">
@@ -109,18 +88,21 @@
               </el-select>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="学分" required>
-              <el-input type="text" v-model="tempData.score">
+              <el-input type="text" v-model="tempData.score" disabled="disabled">
               </el-input>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="是否复训" required>
-              <el-input type="text" v-model="tempData.oldMember">
-              </el-input>
+          <el-col :span="12">
+            <el-form-item label="是否复训" v-if="tempData.role=='学员'" required>
+              <el-select v-model="tempData.oldMember" placeholder="请选择">
+
+                <el-option label="否" value="否"></el-option>
+                <el-option label="是" value="是"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -151,7 +133,6 @@ marginBottom: 5,
 
 <script>
   import {mapGetters} from 'vuex'
-
   export default {
     data() {
       return {
@@ -166,6 +147,7 @@ marginBottom: 5,
           courseId:'',
         },
         courses:[], //课程列表
+        userList:[], //人员列表
         dialogStatus: 'create',
         dialogFormVisible: false,
         textMap: {
@@ -188,6 +170,7 @@ marginBottom: 5,
     },
     created() {
       this.getCourses(); //获取所有课程信息
+      this.getUsers(); //获取所有人员信息
       //获取当前课程
       this.getList(); //获取班级内人员信息
     },
@@ -197,13 +180,30 @@ marginBottom: 5,
       ])
     },
     methods: {
-
+      selectUser() {
+        let userId = this.tempData.userId;
+        let userName;
+        this.userList.forEach(item=>{
+          if (item.id === userId) {
+            userName = item.userName;
+          }
+        })
+        this.tempData.username = userName;
+      },
       getCourses() {
         this.api({
           url: "/CosClass/getCourses",
           method: "get"
         }).then(data => {
           this.courses = data.result;
+        })
+      },
+      getUsers() {
+        this.api({
+          url: "/CosClass/getUsers",
+          method: "get"
+        }).then(data => {
+          this.userList = data.result;
         })
       },
       getList() {
@@ -250,13 +250,14 @@ marginBottom: 5,
       },
       showCreate() {
         //显示新增对话框
+        this.tempData.courseId = this.listQuery.courseId;
         this.tempData.userId = "";
         this.tempData.username = "";
         this.tempData.nickname = "";
         this.tempData.sex = "";
-        this.tempData.role = "";
+        this.tempData.role = "学员";
         this.tempData.oldMember = "";
-        this.tempData.score = "";
+        this.tempData.score = "0";
         this.dialogStatus = "create";
         this.dialogFormVisible = true
       },
@@ -334,7 +335,19 @@ marginBottom: 5,
       },
       formatJson(filterVal, jsonData) {
         return jsonData.map(v => filterVal.map(j => v[j]))
+      },
+      querySearchUserAsync() {
+        //添加新数据
+        this.api({
+          url: "/CosClass/addData",
+          method: "post",
+          data: this.tempData
+        }).then(() => {
+          this.getList();
+          this.dialogFormVisible = false
+        })
       }
+
 
 
     }
