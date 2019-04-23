@@ -256,20 +256,34 @@ marginBottom: 5,
         this.tempData.nickname = "";
         this.tempData.sex = "";
         this.tempData.role = "学员";
-        this.tempData.oldMember = "";
+        this.tempData.oldMember = "否";
         this.tempData.score = "0";
         this.dialogStatus = "create";
-        this.dialogFormVisible = true
+        //重新加载userList  不显示已经在列表的人员
+        let tempid=-1;
+        this.list.forEach(item => {
+          tempid=-1;
+          for (let i=0;i<this.userList.length;i++)
+          {
+            if (item.userId==this.userList[i].id)
+            {
+              tempid=i;
+            }
+          }
+          if (tempid>=0)
+          {
+            this.userList.splice(tempid,1);
+          }
+        });
+        this.dialogFormVisible = true;
       },
       showUpdate($index) {
         let cla = this.list[$index];
         this.tempData.id=cla.id;
         this.tempData.userId = cla.userId;
-        this.tempData.username = cla.username;
-        this.tempData.nickname = cla.nickname;
-        this.tempData.sex = cla.sex;
         this.tempData.role = cla.role;
         this.tempData.score = cla.score;
+        this.tempData.oldMember=cla.oldMember;
         this.dialogStatus = "update";
         this.dialogFormVisible = true
       },
@@ -313,11 +327,13 @@ marginBottom: 5,
         }).then(() => {
           let cla = _vue.list[$index];
           _vue.api({
-            url: "/user/deleteClass",
+            url: "/CosClass/deleteData",
             method: "post",
             data: cla
           }).then(() => {
-            _vue.getList()
+            _vue.getList();
+            _vue.getUsers();
+
           }).catch(() => {
             _vue.$message.error("删除失败")
           })
@@ -326,29 +342,16 @@ marginBottom: 5,
       exportTable() {
         require.ensure([], () => {
           const {export_json_to_excel} = require('../../excel/Export2Excel'); //这里必须使用绝对路径
-          const tHeader = ['id', '姓名', '用户名', '角色id', '性别', '年龄', '电话', 'QQ', '微信', '区域', '学历', '介绍人', '更新时间', '创建时间']; // 导出的表头名
-          const filterVal = ['userId', 'nickname', 'username', 'roleId', 'sex', 'age', 'phone', 'qq', 'wechat', 'aera', 'education', 'introducer', 'updateTime', 'createTime']; // 导出的表头字段名
+          const tHeader = ['id', '课程', '账号', '姓名', '性别', '角色', '是否复训', '分数', '更新时间', '创建时间']; // 导出的表头名
+          const filterVal = ['id', 'courseName', 'username', 'nickname', 'sex', 'role', 'oldMember', 'score', 'updateTime', 'createTime']; // 导出的表头字段名
           const list = this.list;
           const data = this.formatJson(filterVal, list);
-          export_json_to_excel(tHeader, data, `人员信息表`);// 导出的表格名称，根据需要自己命名
+          export_json_to_excel(tHeader, data, `班级人员信息`);// 导出的表格名称，根据需要自己命名
         })
       },
       formatJson(filterVal, jsonData) {
         return jsonData.map(v => filterVal.map(j => v[j]))
-      },
-      querySearchUserAsync() {
-        //添加新数据
-        this.api({
-          url: "/CosClass/addData",
-          method: "post",
-          data: this.tempData
-        }).then(() => {
-          this.getList();
-          this.dialogFormVisible = false
-        })
       }
-
-
 
     }
   }
