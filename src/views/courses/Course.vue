@@ -2,35 +2,16 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form>
-        <el-row>
-          <el-col :span="5">
-            <el-form-item label="课程名称" prop="courseName">
-              <el-input v-model="params.courseName" style="width: 170px" @keyup.enter.native="selectCourse"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="课程类型" prop="courseType">
-              <el-select v-model="params.courseType">
-                <el-option></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="授课老师">
-              <el-select v-model="params.teacher" >
-                <el-option></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="开始时间" prop="startTime">
-              <el-date-picker type="date" value-format="yyyy-MM-dd"  v-model="params.startTime"></el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
         <el-form-item>
-          <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="selectCourse">查询</el-button>
-          <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">添加</el-button>
+          <div class="filter-container">
+            <div class="left-items" style="float: left;">
+              <el-input style="width: 200px" v-model="listQuery.keywords" placeholder="输入关键字"
+                        @keyup.enter.native="getList"></el-input>
+              <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('cos:list')" @click="getList">查询</el-button>
+              <el-button type="primary" icon="plus" v-if="hasPerm('cos:add')" @click="showCreate">新增</el-button>
+              <el-button type="primary" @click="exportTable" v-if="hasPerm('cos:list')">导出</el-button>
+            </div>
+          </div>
         </el-form-item>
       </el-form>
     </div>
@@ -50,10 +31,10 @@
       <el-table-column align="center" label="报名电话" prop="signTel" width="120"></el-table-column>
       <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
-      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('user:update')">
+      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('cos:update')">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
-          <el-button type="danger" icon="delete" v-if="scope.row.userId!=userId "
+          <el-button type="danger" icon="delete"  v-if="hasPerm('cos:delete')"
                      @click="removeUser(scope.$index)">删除
           </el-button>
         </template>
@@ -68,42 +49,86 @@
       :page-sizes="[10, 20, 50, 100]"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
-    <!--<el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">-->
-    <!--<el-form class="small-space" :model="tempUser" label-position="left" label-width="80px"-->
-    <!--style='width: 300px; margin-left:50px;'>-->
-    <!--<el-form-item label="用户名" required v-if="dialogStatus=='create'">-->
-    <!--<el-input type="text" v-model="tempUser.username">-->
-    <!--</el-input>-->
-    <!--</el-form-item>-->
-    <!--<el-form-item label="密码" v-if="dialogStatus=='create'" required>-->
-    <!--<el-input type="password" v-model="tempUser.password">-->
-    <!--</el-input>-->
-    <!--</el-form-item>-->
-    <!--<el-form-item label="新密码" v-else>-->
-    <!--<el-input type="password" v-model="tempUser.password" placeholder="不填则表示不修改">-->
-    <!--</el-input>-->
-    <!--</el-form-item>-->
-    <!--<el-form-item label="角色" required>-->
-    <!--<el-select v-model="tempUser.roleId" placeholder="请选择">-->
-    <!--<el-option-->
-    <!--v-for="item in roles"-->
-    <!--:key="item.roleId"-->
-    <!--:label="item.roleName"-->
-    <!--:value="item.roleId">-->
-    <!--</el-option>-->
-    <!--</el-select>-->
-    <!--</el-form-item>-->
-    <!--<el-form-item label="昵称" required>-->
-    <!--<el-input type="text" v-model="tempUser.nickname">-->
-    <!--</el-input>-->
-    <!--</el-form-item>-->
-    <!--</el-form>-->
-    <!--<div slot="footer" class="dialog-footer">-->
-    <!--<el-button @click="dialogFormVisible = false">取 消</el-button>-->
-    <!--<el-button v-if="dialogStatus=='create'" type="success" @click="createUser">创 建</el-button>-->
-    <!--<el-button type="primary" v-else @click="updateUser">修 改</el-button>-->
-    <!--</div>-->
-    <!--</el-dialog>-->
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form class="small-space" :model="tempData" label-position="right" label-width="120px"
+               style='width: 650px; margin-left:50px; margin-right:50px;'>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="课程类型" required>
+              <el-select :filterable="true" v-model="tempData.courseTypeId" :clearable="true" placeholder="请输入课程类型" @change="setCourseName">
+                <el-option v-for="item in courseType" :key="item.id" :label="item.courseType" :value="item.id"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="课程期数" required>
+              <el-input type="text" v-model="tempData.courseNumber" placeholder="填写数字" @input="setCourseName">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="课程名称" required>
+              <el-input type="text" v-model="tempData.courseName" disabled="disabled">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="授课老师" required>
+              <el-input type="text" v-model="tempData.teacher">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="承办方" required>
+              <el-input type="text" v-model="tempData.organizer">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="承办地址" required>
+              <el-input type="text" v-model="tempData.address">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="开始时间" required>
+              <el-date-picker v-model="tempData.startTime"
+                              type="date"
+                              placeholder="选择日期"
+                              format="yyyy-MM-dd"
+                              value-format="yyyy-MM-dd"
+                              style="width:205px;">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="报名老师" required>
+              <el-input type="text" v-model="tempData.signTeacher">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="报名电话" required>
+              <el-input type="text" v-model="tempData.signTel">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button v-if="dialogStatus=='create'" type="success" @click="createData">添 加</el-button>
+        <el-button type="primary" v-else @click="updateData">修 改</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -118,26 +143,34 @@
         listQuery: {
           pageNum: 1,//页码
           pageRow: 50,//每页条数
+          keywords:"", //关键字查询
         },
-        roles: [],//角色列表
+        courseType: [],//课程类型 下拉列表
         dialogStatus: 'create',
         dialogFormVisible: false,
         textMap: {
           update: '编辑',
           create: '新建用户'
         },
-        params: {
+        tempData: {
+          id:'',
+          courseTypeId: '',
+          courseNumber:'',
           courseName: '',
-          courseType: '',
           teacher: '',
+          address: '',
           startTime: '',
+          signTeacher: '',
+          signTel: '',
+          organizer: '',
+          courseType: ''
         }
       }
     },
     created() {
       this.getList();
-      if (this.hasPerm('user:add') || this.hasPerm('user:update')) {
-        this.getAllRoles();
+      if (this.hasPerm('cos:add') || this.hasPerm('cos:update')) {
+        this.getAllCourseType();
       }
     },
     computed: {
@@ -146,25 +179,25 @@
       ])
     },
     methods: {
-      getAllRoles() {
+      getAllCourseType() {
         this.api({
-          url: "/user/getAllRoles",
+          url: "/CosCourses/getCourseType",
           method: "get"
         }).then(data => {
-          this.roles = data.list;
+          this.courseType = data.result;
         })
       },
       getList() {
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/CosCourses/selectCosCourses",
+          url: "/CosCourses/list",
           method: "get",
           params: this.listQuery
         }).then(data => {
           this.listLoading = false;
           this.list = data.result;
-//          this.totalCount = data.totalCount;
+          this.totalCount = data.totalCount;
         })
       },
       handleSizeChange(val) {
@@ -187,61 +220,76 @@
         return (this.listQuery.pageNum - 1) * this.listQuery.pageRow + $index + 1
       },
 
-      selectCourse() {
-        this.api({
-          url: "/CosCourses/selectCosCourses",
-          method: "get",
-          params: this.params
-        }).then(data=>{
-          this.list = data.result;
-        });
-      },
-
       showCreate() {
         //显示新增对话框
-        this.tempUser.username = "";
-        this.tempUser.password = "";
-        this.tempUser.nickname = "";
-        this.tempUser.roleId = "";
-        this.tempUser.userId = "";
+        this.tempData.courseTypeId = "";
+        this.tempData.courseNumber = "";
+        this.tempData.courseName = "";
+        this.tempData.teacher = "";
+        this.tempData.address = "";
+        this.tempData.startTime = "";
+        this.tempData.signTeacher = "";
+        this.tempData.signTel = "";
+        this.tempData.organizer = "";
+        this.tempData.courseType = "";
         this.dialogStatus = "create"
         this.dialogFormVisible = true
       },
+      //自动生成课程名称
+      setCourseName() {
+        if (this.tempData.courseTypeId>0 && this.tempData.courseNumber>0)
+        {
+          let courseTypeId = this.tempData.courseTypeId;
+          let courseType;
+          this.courseType.forEach(item=>{
+            if (item.id === courseTypeId) {
+              courseType = item.courseType;
+            }
+          })
+          this.tempData.courseName=courseType + "第" + this.tempData.courseNumber + "期";
+        }
+        else {
+          this.tempData.courseName="";
+        }
+      },
+
       showUpdate($index) {
-        let user = this.list[$index];
-        this.tempUser.username = user.username;
-        this.tempUser.nickname = user.nickname;
-        this.tempUser.roleId = user.roleId;
-        this.tempUser.userId = user.userId;
-        this.tempUser.deleteStatus = '1';
-        this.tempUser.password = '';
+        let course = this.list[$index];
+        this.tempData.id=course.id;
+        this.tempData.courseTypeId = course.courseTypeId;
+        this.tempData.courseNumber = course.courseNumber;
+        this.tempData.courseName = course.courseName;
+        this.tempData.teacher = course.teacher;
+        this.tempData.address = course.address;
+        this.tempData.startTime = course.startTime;
+        this.tempData.signTeacher = course.signTeacher;
+        this.tempData.signTel = course.signTel;
+        this.tempData.organizer = course.organizer;
+        this.tempData.courseType = course.courseType;
         this.dialogStatus = "update"
         this.dialogFormVisible = true
       },
-      createUser() {
+      createData() {
         //添加新用户
         this.api({
-          url: "/user/addUser",
+          url: "/CosCourses/addData",
           method: "post",
-          data: this.tempUser
+          data: this.tempData
         }).then(() => {
           this.getList();
           this.dialogFormVisible = false
         })
       },
-      updateUser() {
+      updateData() {
         //修改用户信息
         let _vue = this;
         this.api({
-          url: "/user/updateUser",
+          url: "/CosCourses/updateData",
           method: "post",
-          data: this.tempUser
+          data: this.tempData
         }).then(() => {
           let msg = "修改成功";
-          this.dialogFormVisible = false
-          if (this.userId === this.tempUser.userId) {
-            msg = '修改成功,部分信息重新登录后生效'
-          }
+          this.dialogFormVisible = false;
           this.$message({
             message: msg,
             type: 'success',
@@ -259,12 +307,11 @@
           showCancelButton: false,
           type: 'warning'
         }).then(() => {
-          let user = _vue.list[$index];
-          user.deleteStatus = '2';
+          let course = _vue.list[$index];
           _vue.api({
-            url: "/user/updateUser",
+            url: "/CosCourses/deleteData",
             method: "post",
-            data: user
+            data: course
           }).then(() => {
             _vue.getList()
           }).catch(() => {
@@ -272,6 +319,20 @@
           })
         })
       },
+      exportTable() {
+        require.ensure([], () => {
+          const {export_json_to_excel} = require('../../excel/Export2Excel'); //这里必须使用绝对路径
+          const tHeader = ['id', '课程', '授课老师', '开始时间', '承办方', '地址', '报名老师', '报名电话', '更新时间', '创建时间']; // 导出的表头名
+          const filterVal = ['id', 'courseName', 'teacher', 'startTime', 'organizer', 'address', 'signTeacher', 'signTel', 'updateTime', 'createTime']; // 导出的表头字段名
+          const list = this.list;
+          const data = this.formatJson(filterVal, list);
+          export_json_to_excel(tHeader, data, `课程信息`);// 导出的表格名称，根据需要自己命名
+        })
+      },
+      formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => v[j]))
+      }
+
     }
   }
 </script>
