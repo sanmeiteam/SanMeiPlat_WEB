@@ -320,7 +320,7 @@ marginBottom: 5,
       },
       removeData($index) {
         let _vue = this;
-        this.$confirm('确定删除此用户?', '提示', {
+        this.$confirm('确定删除?', '提示', {
           confirmButtonText: '确定',
           showCancelButton: false,
           type: 'warning'

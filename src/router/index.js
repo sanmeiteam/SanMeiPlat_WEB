@@ -72,6 +72,13 @@ export const asyncRouterMap = [
         menu: 'CourseType'
       },
       {
+        path: 'CourseSchedule',
+        name: '课程表',
+        component: _import('courses/CourseSchedule'),
+        meta: {title: '课程表', icon: 'gold'},
+        menu: 'CourseSchedule'
+      },
+      {
         path: 'CourseCalendar',
         name: '课程日历',
         component: _import('courses/CourseCalendar'),
