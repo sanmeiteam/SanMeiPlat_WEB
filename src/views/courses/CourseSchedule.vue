@@ -224,6 +224,7 @@ marginBottom: 5,
           keywords: '', //关键字查询
           role: '',//角色 班内角色
           courseId:'',
+          userId:'', //登录的用户id
         },
         courses:[], //课程列表
         dialogStatus: 'create',
@@ -251,20 +252,23 @@ marginBottom: 5,
       }
     },
     created() {
+      this.listQuery.userId=this.userId;
       this.getCourses(); //获取所有课程信息
       //获取当前课程
       this.getList(); //获取班级内人员信息
     },
     computed: {
       ...mapGetters([
-        'id'
+        'id',
+        'userId'
       ])
     },
     methods: {
       getCourses() {
         this.api({
-          url: "/CosClass/getCourses",
-          method: "get"
+          url: "/CosCourses/getCourses",
+          method: "get",
+          params: this.listQuery
         }).then(data => {
           this.courses = data.result;
         })

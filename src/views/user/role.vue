@@ -20,9 +20,22 @@
         <template slot-scope="scope">
           <span v-for="user in scope.row.users">
             <span v-text="user.nickname"
-                  style="display: inline-block;vertical-align: middle;margin-left:5px;margin-right:5px;padding:3px 5px 3px 5px;border:solid 1px gray;">
+                  style="display: inline-block;vertical-align: middle;margin-left:5px;margin-right:5px;">
             </span>
           </span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="是否数据控制" prop="dataControl" width="120">
+        <template scope="scope">
+          <el-switch
+            active-color="#13ce66"
+            inactive-color="#dadde5"
+            active-value="1"
+            inactive-value="0"
+            v-model="scope.row.dataControl"
+            @change=change(scope.$index,scope.row) disabled="disabled"
+          >
+          </el-switch>
         </template>
       </el-table-column>
       <el-table-column align="center" label="菜单&权限" width="500">
