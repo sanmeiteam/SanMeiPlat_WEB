@@ -62,7 +62,7 @@ export const asyncRouterMap = [
         name: '课程管理',
         component: _import('courses/Course'),
         meta: {title: '课程管理', icon: 'detail'},
-        menu: 'Course'
+        menu: 'cos'
       },
       {
         path: 'CourseType',
@@ -76,7 +76,7 @@ export const asyncRouterMap = [
         name: '课程表',
         component: _import('courses/CourseSchedule'),
         meta: {title: '课程表', icon: 'gold'},
-        menu: 'CourseSchedule'
+        menu: 'schd'
       },
       {
         path: 'CourseCalendar',
@@ -90,7 +90,7 @@ export const asyncRouterMap = [
         name: '班级管理',
         component: _import('courses/Class'),
         meta: {title: '班级管理', icon: 'team'},
-        menu: 'Class'
+        menu: 'class'
       },
       {
         path: 'ClassPhoto',
@@ -115,7 +115,7 @@ export const asyncRouterMap = [
         name: '我的作业',
         component: _import('homework/MyHomework'),
         meta: {title: '我的作业', icon: 'file-word'},
-        menu: 'MyHomework'
+        menu: 'hwk'
       },
       {
         path: 'HomeworkRemark',

@@ -13,6 +13,14 @@ import {hasPermission} from "./utils/hasPermission";
 import Blob from './excel/Blob.js';
 import Export2Excel from './excel/Export2Excel.js';
 
+//富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+import '@/styles/index.scss' // global css
+Vue.use(VueQuillEditor)
+
 Vue.use(ElementUI, {locale})
 Vue.prototype.api = api
 //全局的常量

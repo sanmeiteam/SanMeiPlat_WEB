@@ -15,17 +15,17 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="角色" prop="roleName" width="100"></el-table-column>
-      <el-table-column align="center" label="用户">
-        <template slot-scope="scope">
-          <span v-for="user in scope.row.users">
-            <span v-text="user.nickname"
-                  style="display: inline-block;vertical-align: middle;margin-left:5px;margin-right:5px;">
-            </span>
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="是否数据控制" prop="dataControl" width="120">
+      <el-table-column align="center" label="角色" prop="roleName" width="150"></el-table-column>
+      <!--<el-table-column align="center" label="用户">-->
+        <!--<template slot-scope="scope">-->
+          <!--<span v-for="user in scope.row.users">-->
+            <!--<span v-text="user.nickname"-->
+                  <!--style="display: inline-block;vertical-align: middle;margin-left:5px;margin-right:5px;">-->
+            <!--</span>-->
+          <!--</span>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
+      <el-table-column align="center" label="是否数据控制" prop="dataControl" width="150">
         <template scope="scope">
           <el-switch
             active-color="#13ce66"
@@ -38,12 +38,12 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="菜单&权限" width="500">
+      <el-table-column align="left" label="菜单&权限">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.roleName==adminName" type="success">全部</el-tag>
           <div v-else>
             <div v-for="menu in scope.row.menus" style="text-align: left;line-height:38px;">
-              <span style="width: 160px;display: inline-block;text-align: right ">{{menu.menuName}}</span>
+              <span style="width: 100px;display: inline-block;text-align: right ">{{menu.menuName}}</span>
               <el-tag v-for="perm in menu.permissions" :key="perm.permissionName" v-text="perm.permissionName"
                       style="margin-right: 7px;"
                       type="primary"></el-tag>
@@ -51,7 +51,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="管理" width="200" v-if="hasPerm('role:update') ||hasPerm('role:delete') ">
+      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('role:update') ||hasPerm('role:delete') ">
         <template slot-scope="scope">
           <div v-if="scope.row.roleName!='管理员'">
             <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)" v-if="hasPerm('role:update')">修改

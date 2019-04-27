@@ -39,16 +39,16 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="课程" prop="courseName"></el-table-column>
-      <el-table-column align="center" label="账号" prop="username" width="180"></el-table-column>
-      <el-table-column align="center" label="姓名" prop="nickname" width="100"></el-table-column>
+      <!--<el-table-column align="center" label="课程" prop="courseName"></el-table-column>-->
+      <el-table-column align="center" label="账号" prop="username"></el-table-column>
+      <el-table-column align="center" label="姓名" prop="nickname"></el-table-column>
       <el-table-column align="center" label="性别" prop="sex" width="80"></el-table-column>
-      <el-table-column align="center" label="角色" prop="role" width="100"></el-table-column>
-      <el-table-column align="center" label="是否复训" prop="oldMember" width="100"></el-table-column>
+      <el-table-column align="center" label="角色" prop="role" width="80"></el-table-column>
+      <el-table-column align="center" label="是否复训" prop="oldMember" width="80"></el-table-column>
       <el-table-column align="center" label="分数" prop="score" width="80"></el-table-column>
-      <el-table-column align="center" label="创建时间" prop="createTime" width="150"></el-table-column>
-      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="150"></el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('class:update')">
+      <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
+      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
+      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('class:update')" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
           <el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"

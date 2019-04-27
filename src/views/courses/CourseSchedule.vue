@@ -26,26 +26,26 @@
     </el-form>
     <el-table :data="list"
               v-loading.body="listLoading" element-loading-text="拼命加载中" border fit highlight-current-row>
-      <el-table-column align="center" label="序号" width="80">
+      <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="课程" prop="courseName"></el-table-column>
-      <el-table-column align="center" label="课时编号" prop="scheduleNo" width="100"></el-table-column>
-      <el-table-column align="center" label="课时名称" prop="scheduleName" width="120"></el-table-column>
+      <!--<el-table-column align="center" label="课程" prop="courseName" width="200"></el-table-column>-->
+      <el-table-column align="center" label="课时编号" prop="scheduleNo" width="80"></el-table-column>
+      <el-table-column align="center" label="课时名称" prop="scheduleName"></el-table-column>
       <el-table-column align="center" label="日期" prop="scheduleDate" width="100"></el-table-column>
-      <el-table-column align="center" label="时段" prop="period" width="100"></el-table-column>
+      <el-table-column align="center" label="时段" prop="period" width="80"></el-table-column>
       <el-table-column align="center" label="签到时间" prop="startTime" width="100"></el-table-column>
-      <el-table-column align="center" label="心得字数" prop="homeworkWords" width="100"></el-table-column>
+      <el-table-column align="center" label="心得字数" prop="homeworkWords" width="80"></el-table-column>
       <el-table-column align="center" label="最晚提交时间" prop="lastDate" width="120"></el-table-column>
       <!--<el-table-column align="center" label="签到学分" prop="signScore" width="80"></el-table-column>-->
       <!--<el-table-column align="center" label="按时提交" prop="homeworkTimeScore" width="80"></el-table-column>-->
       <!--<el-table-column align="center" label="字数符合" prop="homeworkWordsScore" width="80"></el-table-column>-->
       <!--<el-table-column align="center" label="讲师评阅" prop="reviewScore" width="80"></el-table-column>-->
-      <el-table-column align="center" label="创建时间" prop="createTime" width="120"></el-table-column>
+      <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('class:update')">
+      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('class:update')" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
           <el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"
@@ -63,7 +63,7 @@
       :page-sizes="[10, 20, 50, 100]"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style="margin-top:-5vh;">
       <el-form class="small-space" :model="tempData" label-position="right" label-width="120px"
                style='width: 650px; margin-left:50px; margin-right:50px;'>
         <el-row>

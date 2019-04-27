@@ -31,7 +31,7 @@
       <el-table-column align="center" label="报名电话" prop="signTel" width="120"></el-table-column>
       <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
-      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('cos:update')">
+      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('cos:update')" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
           <el-button type="danger" icon="delete"  v-if="hasPerm('cos:delete')"

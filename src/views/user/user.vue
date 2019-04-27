@@ -29,7 +29,7 @@
               :on-success="onSuccess"
               limit="100"
               :show-file-list="false">
-              <el-button v-if="hasPerm('user:importExcel')" size="small" type="primary">点击上传</el-button>
+              <el-button v-if="hasPerm('user:importExcel')" size="small" style="font-size:14px;" type="primary">点击上传</el-button>
             </el-upload>
           </div>
         </div>
@@ -37,13 +37,13 @@
     </el-form>
     <el-table :data="list"
               v-loading.body="listLoading" element-loading-text="拼命加载中" border fit highlight-current-row>
-      <el-table-column align="center" label="序号" width="80">
+      <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="姓名" prop="nickname" style="width: 60px;"></el-table-column>
-      <el-table-column align="center" label="用户名" prop="username" style="width: 60px;"></el-table-column>
+      <el-table-column align="center" label="姓名" prop="nickname"></el-table-column>
+      <el-table-column align="center" label="用户名" prop="username"></el-table-column>
       <el-table-column align="center" label="角色" width="100">
         <template slot-scope="scope">
           <el-tag type="success" v-text="scope.row.roleName" v-if="scope.row.roleId===1"></el-tag>
@@ -52,11 +52,11 @@
       </el-table-column>
       <el-table-column align="center" label="性别" prop="sex" width="60"></el-table-column>
       <el-table-column align="center" label="年龄" prop="age" width="60"></el-table-column>
-      <el-table-column align="center" label="区域" prop="aera" width="100"></el-table-column>
-      <el-table-column align="center" label="学历" prop="education" width="100"></el-table-column>
-      <el-table-column align="center" label="创建时间" prop="createTime" width="170"></el-table-column>
-      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="170"></el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('user:update')">
+      <el-table-column align="center" label="区域" prop="aera" width="80"></el-table-column>
+      <el-table-column align="center" label="学历" prop="education" width="80"></el-table-column>
+      <el-table-column align="center" label="创建时间" prop="createTime" width="160"></el-table-column>
+      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="160"></el-table-column>
+      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('user:update')" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
           <el-button type="danger" icon="delete" v-if="scope.row.userId!=userId "
@@ -74,7 +74,7 @@
       :page-sizes="[10, 20, 50, 100]"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" style="margin-top:-5vh;">
       <el-form class="small-space" :model="tempUser" label-position="right" label-width="120px"
                style='width: 650px; margin-left:50px; margin-right:50px;'>
         <el-row>

@@ -34,15 +34,16 @@
 
 //表格 表头样式
  .el-table th{
-   height:45px;
+   height:40px;
    background-color:#fafaff;
    border-top:solid 1px #eeeeee;
    color: #001528;
+   padding:0;
  }
 
 //表格 行样式
 .el-table tr{
-  height:45px;
+  height:40px;
   color: #001528;
 }
 
@@ -53,7 +54,17 @@
  }
  // 按钮样式
  .el-button {
-   height:35px;
+   height:30px;
    line-height: 0px;
 
  }
+ .el-dialog {
+   width:800px;
+ }
+ .el-dialog__body{
+   padding-left:0px;
+ }
+.dialog-footer{
+  margin-top:-20px;
+  margin-right:30px;
+}
