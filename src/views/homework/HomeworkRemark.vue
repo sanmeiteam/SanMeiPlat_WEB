@@ -1,228 +1,386 @@
 <template>
-  <div style="background:#f0f2f5;margin-top: -20px;">
-    <div class="wscn-http404">
-      <div class="pic-404">
-        <img class="pic-404__parent" :src="img_404" alt="404">
-        <img class="pic-404__child left" :src="img_404_cloud" alt="404">
-        <img class="pic-404__child mid" :src="img_404_cloud" alt="404">
-        <img class="pic-404__child right" :src="img_404_cloud" alt="404">
+  <div class="app-container">
+    <el-form>
+      <el-form-item>
+        <div class="filter-container">
+          <div class="left-items" style="float: left;">
+            <el-select v-model="listQuery.courseId" placeholder="选择课程" style="width:250px;" @change="getList">
+              <el-option label="请选择课程" value=""></el-option>
+              <el-option
+                v-for="item in courses"
+                :key="item.id"
+                :label="item.courseName"
+                :value="item.id">
+              </el-option>
+            </el-select>
+            <!--<el-input style="width: 200px" v-model="listQuery.keywords" placeholder="输入关键字"-->
+            <!--@keyup.enter.native="getList"></el-input>-->
+            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('class:list')"
+                       @click="getList">查询
+            </el-button>
+            <!--<el-button type="primary" icon="plus" v-if="hasPerm('class:add')&&listQuery.courseId>''" @click="showCreate">新增</el-button>-->
+            <!--<el-button type="primary" @click="exportTable" v-if="hasPerm('class:list')&&listQuery.courseId>''">导出</el-button>-->
+          </div>
+        </div>
+      </el-form-item>
+    </el-form>
+    <el-table :data="list"
+              v-loading.body="listLoading" element-loading-text="拼命加载中" border fit highlight-current-row>
+      <el-table-column align="center" label="序号" width="60">
+        <template slot-scope="scope">
+          <span v-text="getIndex(scope.$index)"> </span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="课时名称" prop="scheduleName" width="80"></el-table-column>
+      <!--<el-table-column align="center" label="日期" prop="scheduleDate" width="100"></el-table-column>-->
+      <el-table-column align="center" label="最晚提交时间" prop="lastDate" width="120"></el-table-column>
+
+      <!--<el-table-column align="center" label="用户id" prop="hwkUserId" width="120"></el-table-column>-->
+      <!--<el-table-column align="center" label="用户名" prop="userName" width="100"></el-table-column>-->
+      <!--<el-table-column align="center" label="姓名" prop="nickName" width="100"></el-table-column>-->
+
+      <el-table-column align="center" label="标题" prop="title"></el-table-column>
+      <!--<el-table-column align="center" label="内容" prop="content" width="80"></el-table-column>-->
+      <el-table-column align="center" label="心得字数" prop="homeworkWords" width="80"></el-table-column>
+      <el-table-column align="center" label="公开程度" prop="secret" width="80"></el-table-column>
+      <el-table-column align="center" label="讲师评阅" prop="comment" width="120"></el-table-column>
+      <!--<el-table-column align="center" label="评阅学分" prop="reviewScore" width="100"></el-table-column>-->
+      <!--<el-table-column align="center" label="评阅时间" prop="reviewTime" width="100"></el-table-column>-->
+
+      <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
+      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
+      <el-table-column align="center" label="管理" width="120" v-if="hasPerm('class:update')" fixed="right">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">上传心得</el-button>
+          <!--<el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"-->
+          <!--@click="removeData(scope.$index)">删除-->
+          <!--</el-button>-->
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="listQuery.pageNum"
+      :page-size="listQuery.pageRow"
+      :total="totalCount"
+      :page-sizes="[10, 20, 50, 100]"
+      layout="total, sizes, prev, pager, next, jumper">
+    </el-pagination>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" fullscreen="true">
+      <el-form class="small-space" :model="tempData" label-position="right" label-width="100px"
+               style='margin-left:30px; margin-right:50px; ' >
+        <el-row>
+          <el-col :span="18">
+            <el-form-item label="心得标题" required>
+              <el-input type="text" v-model="tempData.title" style="width: 100%;">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="公开程度" required>
+              <el-select v-model="tempData.secret" placeholder="请选择" style="width:100%;">
+                <el-option label="完全公开" value="完全公开"></el-option>
+                <el-option label="平台可见" value="平台可见"></el-option>
+                <el-option label="课程可见" value="课程可见"></el-option>
+                <el-option label="班级可见" value="班级可见"></el-option>
+                <el-option label="个人可见" value="个人可见"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="心得内容" required >
+          <div>
+            <quill-editor style="width:100%;"
+                          v-model="tempData.content"
+                          ref="myQuillEditor"
+                          :options="editorOption"
+                          @keydown=""
+            >
+            </quill-editor>
+          </div>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" style="text-align: center;margin-top:-40px;">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="draftData">暂 存</el-button>
+        <el-button type="primary" @click="updateData">提 交</el-button>
       </div>
-      <div class="bullshit">
-        <div class="bullshit__oops">OOPS!</div>
-        <div class="bullshit__headline">{{ message }}</div>
-        <div class="bullshit__info">请检查您输入的网址是否正确，请点击以下按钮返回主页或者发送错误报告</div>
-        <a href="/" class="bullshit__return-home">返回首页</a>
-      </div>
-    </div>
+    </el-dialog>
   </div>
 </template>
 
-<script>
- import img_404 from '@/assets/404_images/404.png'
- import img_404_cloud from '@/assets/404_images/404_cloud.png'
-
- export default {
-   data() {
-     return {
-       img_404,
-       img_404_cloud
-     }
-   },
-   computed: {
-     message() {
-       return '页面找不到了......'
-     }
-   }
- }
-</script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-.wscn-http404 {
-  position: relative;
-  width: 1200px;
-  margin: 20px auto 60px;
-  padding: 0 100px;
-  overflow: hidden;
-  .pic-404 {
-    position: relative;
-    float: left;
-    width: 600px;
-    padding: 150px 0;
-    overflow: hidden;
-    &__parent {
-      width: 100%;
-    }
-    &__child {
-      position: absolute;
-      &.left {
-        width: 80px;
-        top: 17px;
-        left: 220px;
-        opacity: 0;
-        animation-name: cloudLeft;
-        animation-duration: 2s;
-        animation-timing-function: linear;
-        animation-fill-mode: forwards;
-        animation-delay: 1s;
-      }
-      &.mid {
-        width: 46px;
-        top: 10px;
-        left: 420px;
-        opacity: 0;
-        animation-name: cloudMid;
-        animation-duration: 2s;
-        animation-timing-function: linear;
-        animation-fill-mode: forwards;
-        animation-delay: 1.2s;
-      }
-      &.right {
-        width: 62px;
-        top: 100px;
-        left: 500px;
-        opacity: 0;
-        animation-name: cloudRight;
-        animation-duration: 2s;
-        animation-timing-function: linear;
-        animation-fill-mode: forwards;
-        animation-delay: 1s;
-      }
-      @keyframes cloudLeft {
-        0% {
-          top: 17px;
-          left: 220px;
-          opacity: 0;
-        }
-        20% {
-          top: 33px;
-          left: 188px;
-          opacity: 1;
-        }
-        80% {
-          top: 81px;
-          left: 92px;
-          opacity: 1;
-        }
-        100% {
-          top: 97px;
-          left: 60px;
-          opacity: 0;
-        }
-      }
-      @keyframes cloudMid {
-        0% {
-          top: 10px;
-          left: 420px;
-          opacity: 0;
-        }
-        20% {
-          top: 40px;
-          left: 360px;
-          opacity: 1;
-        }
-        70% {
-          top: 130px;
-          left: 180px;
-          opacity: 1;
-        }
-        100% {
-          top: 160px;
-          left: 120px;
-          opacity: 0;
-        }
-      }
-      @keyframes cloudRight {
-        0% {
-          top: 100px;
-          left: 500px;
-          opacity: 0;
-        }
-        20% {
-          top: 120px;
-          left: 460px;
-          opacity: 1;
-        }
-        80% {
-          top: 180px;
-          left: 340px;
-          opacity: 1;
-        }
-        100% {
-          top: 200px;
-          left: 300px;
-          opacity: 0;
-        }
-      }
-    }
-  }
-  .bullshit {
-    position: relative;
-    float: left;
-    width: 300px;
-    padding: 150px 0;
-    overflow: hidden;
-    &__oops {
-      font-size: 32px;
-      font-weight: bold;
-      line-height: 40px;
-      color: #1482f0;
-      opacity: 0;
-      margin-bottom: 20px;
-      animation-name: slideUp;
-      animation-duration: 0.5s;
-      animation-fill-mode: forwards;
-    }
-    &__headline {
-      font-size: 20px;
-      line-height: 24px;
-      color: #1482f0;
-      opacity: 0;
-      margin-bottom: 10px;
-      animation-name: slideUp;
-      animation-duration: 0.5s;
-      animation-delay: 0.1s;
-      animation-fill-mode: forwards;
-    }
-    &__info {
-      font-size: 13px;
-      line-height: 21px;
-      color: grey;
-      opacity: 0;
-      margin-bottom: 30px;
-      animation-name: slideUp;
-      animation-duration: 0.5s;
-      animation-delay: 0.2s;
-      animation-fill-mode: forwards;
-    }
-    &__return-home {
-      display: block;
-      float: left;
-      width: 110px;
-      height: 36px;
-      background: #1482f0;
-      border-radius: 100px;
-      text-align: center;
-      color: #ffffff;
-      opacity: 0;
-      font-size: 14px;
-      line-height: 36px;
-      cursor: pointer;
-      animation-name: slideUp;
-      animation-duration: 0.5s;
-      animation-delay: 0.3s;
-      animation-fill-mode: forwards;
-    }
-    @keyframes slideUp {
-      0% {
-        transform: translateY(60px);
-        opacity: 0;
-      }
-      100% {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-  }
+const ColProps = {
+xs: 24,
+sm: 12,
+lg: 6,
+style: {
+marginBottom: 5,
+},
 }
 
+<style rel="stylesheet/scss" lang="scss" scoped>
+  .button {
+
+  }
 </style>
+
+<script>
+  import {mapGetters} from 'vuex'
+  export default {
+    data() {
+      return {
+        totalCount: 0, //分页组件--数据总条数
+        list: [],//表格的数据
+        listLoading: false,//数据加载等待动画
+        listQuery: {
+          pageNum: 1,//页码
+          pageRow: 50,//每页条数
+          keywords: '', //关键字查询
+          role: '',//角色 班内角色
+          courseId:'',
+          userId:'', //登录的用户id
+        },
+        courses:[], //课程列表
+        dialogStatus: 'create',
+        dialogFormVisible: false,
+        textMap: {
+          update: '编写心得',
+          create: '添加'
+        },
+        tempData: {
+          id:'',
+          userId:'', //登录用户ID
+          courseId: '',
+          courseName: '',
+          scheduleId: '',
+          scheduleNo: '',
+          scheduleName: '',
+          scheduleDate: '',
+          lastDate: '',
+
+          hwkUserId: '',
+          userName: '',
+          nickName: '',
+
+          title: '',
+          content: '',
+          homeworkWords: '',
+          secret: '',
+          comment: '',
+          reviewScore: '',
+          reviewTime: ''
+        }
+      }
+    },
+    created() {
+      this.listQuery.userId=this.userId;
+      this.tempData.userId=this.userId;
+      this.getCourses(); //获取所有课程信息
+      //获取当前课程
+      this.getList(); //获取班级内人员信息
+      document.addEventListener('keydown',this.handleEvent);
+    },
+    computed: {
+      ...mapGetters([
+        'id',
+        'userId'
+      ])
+    },
+    methods: {
+      getCourses() {
+        this.api({
+          url: "/CosCourses/getCourses",
+          method: "get",
+          params: this.listQuery
+        }).then(data => {
+          this.courses = data.result;
+        })
+      },
+      getList() {
+        //查询列表
+        this.listLoading = true;
+        this.api({
+          url: "/MyHomework/list",
+          method: "get",
+          params: this.listQuery
+        }).then(data => {
+          this.listLoading = false;
+          this.list = data.result;
+          this.totalCount = data.totalCount;
+        })
+      },
+      onSuccess() {
+        this.$message({
+          message: "上传成功",
+          type: 'success',
+          duration: 1 * 1000,
+          onClose: () => {
+            this.getList();
+          }
+        })
+      },
+      handleSizeChange(val) {
+        //改变每页数量
+        this.listQuery.pageRow = val;
+        this.handleFilter();
+      },
+      handleCurrentChange(val) {
+        //改变页码
+        this.listQuery.pageNum = val;
+        this.getList();
+      },
+      handleFilter() {
+        //查询事件
+        this.listQuery.pageNum = 1;
+        this.getList()
+      },
+      getIndex($index) {
+        //表格序号
+        return (this.listQuery.pageNum - 1) * this.listQuery.pageRow + $index + 1
+      },
+      //自定义方法---
+
+
+      showUpdate($index) {
+        let tmp = this.list[$index];
+        this.tempData.id=tmp.id;
+        this.tempData.courseId = tmp.courseId;
+        this.tempData.courseName = tmp.courseName;
+        this.tempData.scheduleId = tmp.scheduleId;
+        this.tempData.scheduleNo = tmp.scheduleNo;
+        this.tempData.scheduleName = tmp.scheduleName;
+        this.tempData.scheduleDate = tmp.scheduleDate;
+        this.tempData.lastDate = tmp.lastDate;
+
+        this.tempData.hwkUserId = tmp.hwkUserId;
+        this.tempData.userName = tmp.userName;
+        this.tempData.nickName = tmp.nickName;
+
+        this.tempData.title=tmp.title;
+        this.tempData.content=tmp.content;
+        this.tempData.homeworkWords=tmp.homeworkWords;
+
+        if (tmp.secret =="" || tmp.secret == null ){
+          this.tempData.secret="完全公开";
+        }
+        else {
+          this.tempData.secret=tmp.secret;
+        }
+        this.tempData.comment=tmp.comment;
+        this.tempData.reviewScore=tmp.reviewScore;
+        this.tempData.reviewTime=tmp.reviewTime;
+
+        this.dialogStatus = "update";
+        this.dialogFormVisible = true;
+      },
+      draftData() {
+        //暂存 草稿
+        let content=this.tempData.content;
+        let tmpContent=content.replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi,'').replace(/<[^>]+?>/g,'').replace(/\s+/g,' ').replace(/ /g,' ').replace(/>/g,' ');
+        let tmpWords=tmpContent.replace(/\s+/g,"").length;
+        this.tempData.content=this.tempData.content.replace(/\t+/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+        this.tempData.homeworkWords=tmpWords;
+
+        let _vue = this;
+        this.api({
+          url: "/MyHomework/updateData",
+          method: "post",
+          data: this.tempData
+        }).then(() => {
+          let msg = "保存成功";
+          this.dialogFormVisible = true;
+          this.$message({
+            message: msg,
+            type: 'success',
+            duration: 1 * 1000,
+            onClose: () => {
+              _vue.getList();
+            }
+          })
+        })
+      },
+      updateData() {
+        //修改信息
+        let content=this.tempData.content;
+        let tmpContent=content.replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi,'').replace(/<[^>]+?>/g,'').replace(/\s+/g,' ').replace(/ /g,' ').replace(/>/g,' ');
+        let tmpWords=tmpContent.replace(/\s+/g,"").length;
+        this.tempData.content=this.tempData.content.replace(/\t+/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+
+        if (tmpWords<2000)
+        {
+          this.$confirm('您的心得字数不足2000, 是否继续提交?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            ///继续提交
+            this.tempData.homeworkWords=tmpWords;
+            let _vue = this;
+            this.api({
+              url: "/MyHomework/updateData",
+              method: "post",
+              data: this.tempData
+            }).then(() => {
+              let msg = "上传心得成功";
+              this.dialogFormVisible = false;
+              this.$message({
+                message: msg,
+                type: 'success',
+                duration: 1 * 1000,
+                onClose: () => {
+                  _vue.getList();
+                }
+              })
+            })
+
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消提交'
+            });
+          });
+
+          /////
+        }
+        else {
+
+          this.tempData.homeworkWords=tmpWords;
+          let _vue = this;
+          this.api({
+            url: "/MyHomework/updateData",
+            method: "post",
+            data: this.tempData
+          }).then(() => {
+            let msg = "上传心得成功";
+            this.dialogFormVisible = false;
+            this.$message({
+              message: msg,
+              type: 'success',
+              duration: 1 * 1000,
+              onClose: () => {
+                _vue.getList();
+              }
+            })
+          })
+
+          ////
+        }
+
+      },
+      handleEvent(event){
+        if(event.keyCode === 83 && event.ctrlKey){
+          console.log('拦截到83+ctrl');//ctrl+s
+          if (this.dialogFormVisible == true){
+            this.draftData();
+          }
+          event.preventDefault();
+          event.returnValue = false;
+          return false;
+        }
+      },
+    }
+  }
+
+</script>
+

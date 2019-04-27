@@ -57,19 +57,20 @@ export const asyncRouterMap = [
     name: '',
     meta: {title: '课程中心', icon: 'calendar-check'},
     children: [
-      {
-        path: '',
-        name: '课程管理',
-        component: _import('courses/Course'),
-        meta: {title: '课程管理', icon: 'detail'},
-        menu: 'cos'
-      },
+
       {
         path: 'CourseType',
         name: '课程种类',
         component: _import('courses/CourseType'),
         meta: {title: '课程种类', icon: 'gold'},
         menu: 'CourseType'
+      },
+      {
+        path: '',
+        name: '课程管理',
+        component: _import('courses/Course'),
+        meta: {title: '课程管理', icon: 'detail'},
+        menu: 'cos'
       },
       {
         path: 'CourseSchedule',
@@ -79,18 +80,18 @@ export const asyncRouterMap = [
         menu: 'schd'
       },
       {
-        path: 'CourseCalendar',
-        name: '课程日历',
-        component: _import('courses/CourseCalendar'),
-        meta: {title: '课程日历', icon: 'calendar'},
-        menu: 'CourseCalendar'
-      },
-      {
         path: 'Class',
         name: '班级管理',
         component: _import('courses/Class'),
         meta: {title: '班级管理', icon: 'team'},
         menu: 'class'
+      },
+      {
+        path: 'CourseCalendar',
+        name: '课程日历',
+        component: _import('courses/CourseCalendar'),
+        meta: {title: '课程日历', icon: 'calendar'},
+        menu: 'CourseCalendar'
       },
       {
         path: 'ClassPhoto',

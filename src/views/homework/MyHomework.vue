@@ -14,7 +14,7 @@
               </el-option>
             </el-select>
             <!--<el-input style="width: 200px" v-model="listQuery.keywords" placeholder="输入关键字"-->
-                      <!--@keyup.enter.native="getList"></el-input>-->
+            <!--@keyup.enter.native="getList"></el-input>-->
             <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('class:list')"
                        @click="getList">查询
             </el-button>
@@ -53,7 +53,7 @@
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">上传心得</el-button>
           <!--<el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"-->
-                     <!--@click="removeData(scope.$index)">删除-->
+          <!--@click="removeData(scope.$index)">删除-->
           <!--</el-button>-->
         </template>
       </el-table-column>
@@ -91,19 +91,20 @@
         </el-row>
         <el-form-item label="心得内容" required >
           <div>
-            <quill-editor style="width:100%;" 
+            <quill-editor style="width:100%;"
                           v-model="tempData.content"
                           ref="myQuillEditor"
                           :options="editorOption"
-                          >
+                          @keydown=""
+            >
             </quill-editor>
           </div>
         </el-form-item>
       </el-form>
-      <div slot="footer" style="text-align: center;">
+      <div slot="footer" style="text-align: center;margin-top:-40px;">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="success" @click="createData">添 加</el-button>
-        <el-button type="primary" v-else @click="updateData">提 交</el-button>
+        <el-button type="primary" @click="draftData">暂 存</el-button>
+        <el-button type="primary" @click="updateData">提 交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -178,6 +179,7 @@ marginBottom: 5,
       this.getCourses(); //获取所有课程信息
       //获取当前课程
       this.getList(); //获取班级内人员信息
+      document.addEventListener('keydown',this.handleEvent);
     },
     computed: {
       ...mapGetters([
@@ -240,31 +242,6 @@ marginBottom: 5,
       //自定义方法---
 
 
-      showCreate() {
-        //显示新增对话框
-        this.tempData.courseId = this.listQuery.courseId;
-        this.tempData.courseName = "";
-        this.tempData.scheduleNo = "";
-        this.tempData.scheduleId = "";
-        this.tempData.scheduleName = "";
-        this.tempData.scheduleDate = "";
-        this.tempData.lastDate = "";
-
-        this.tempData.hwkUserId = "";
-        this.tempData.userName = "";
-        this.tempData.nickName = "";
-
-        this.tempData.title = "";
-        this.tempData.content = "";
-        this.tempData.homeworkWords = "";
-        this.tempData.secret = "";
-        this.tempData.comment = "";
-        this.tempData.reviewScore = "";
-        this.tempData.reviewTime = "";
-
-        this.dialogStatus = "create";
-        this.dialogFormVisible = true;
-      },
       showUpdate($index) {
         let tmp = this.list[$index];
         this.tempData.id=tmp.id;
@@ -297,21 +274,39 @@ marginBottom: 5,
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
       },
-      createData() {
-        //添加新数据
+      draftData() {
+        //暂存 草稿
+        let content=this.tempData.content;
+        let tmpContent=content.replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi,'').replace(/<[^>]+?>/g,'').replace(/\s+/g,' ').replace(/ /g,' ').replace(/>/g,' ');
+        let tmpWords=tmpContent.replace(/\s+/g,"").length;
+        this.tempData.content=this.tempData.content.replace(/\t+/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+        this.tempData.homeworkWords=tmpWords;
+
+        let _vue = this;
         this.api({
-          url: "/MyHomework/addData",
+          url: "/MyHomework/updateData",
           method: "post",
           data: this.tempData
         }).then(() => {
-          this.getList();
-          this.dialogFormVisible = false
+          let msg = "保存成功";
+          this.dialogFormVisible = true;
+          this.$message({
+            message: msg,
+            type: 'success',
+            duration: 1 * 1000,
+            onClose: () => {
+              _vue.getList();
+            }
+          })
         })
       },
       updateData() {
         //修改信息
-        let tmpContent=this.tempData.content.replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi,'').replace(/<[^>]+?>/g,'').replace(/\s+/g,' ').replace(/ /g,' ').replace(/>/g,' ');
+        let content=this.tempData.content;
+        let tmpContent=content.replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi,'').replace(/<[^>]+?>/g,'').replace(/\s+/g,' ').replace(/ /g,' ').replace(/>/g,' ');
         let tmpWords=tmpContent.replace(/\s+/g,"").length;
+        this.tempData.content=this.tempData.content.replace(/\t+/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+
         if (tmpWords<2000)
         {
           this.$confirm('您的心得字数不足2000, 是否继续提交?', '提示', {
@@ -373,58 +368,19 @@ marginBottom: 5,
         }
 
       },
-      removeData($index) {
-        let _vue = this;
-        this.$confirm('确定删除?', '提示', {
-          confirmButtonText: '确定',
-          showCancelButton: false,
-          type: 'warning'
-        }).then(() => {
-          let cla = _vue.list[$index];
-          _vue.api({
-            url: "/MyHomework/deleteData",
-            method: "post",
-            data: cla
-          }).then(() => {
-            _vue.getList();
-          }).catch(() => {
-            _vue.$message.error("删除失败")
-          })
-        })
+      handleEvent(event){
+        if(event.keyCode === 83 && event.ctrlKey){
+          console.log('拦截到83+ctrl');//ctrl+s
+          if (this.dialogFormVisible == true){
+            this.draftData();
+          }
+          event.preventDefault();
+          event.returnValue = false;
+          return false;
+        }
       },
-      // exportTable() {
-      //   require.ensure([], () => {
-      //     const {export_json_to_excel} = require('../../excel/Export2Excel'); //这里必须使用绝对路径
-      //     const tHeader = ['id', '课程', '课时编号', '课时名称', '日期', '时段', '签到时间', '心得字数', '最晚提交时间', '签到学分', '按时提交学分', '作业字数学分', '讲师评阅学分', '更新时间', '创建时间']; // 导出的表头名
-      //     const filterVal = ['id', 'courseName', 'scheduleNo', 'scheduleName', 'scheduleDate', 'period', 'startTime', 'homeworkWords', 'lastDate', 'signScore', 'homeworkTimeScore', 'homeworkWordsScore', 'reviewScore', 'updateTime', 'createTime']; // 导出的表头字段名
-      //     const list = this.list;
-      //     const data = this.formatJson(filterVal, list);
-      //     export_json_to_excel(tHeader, data, `课程表信息`);// 导出的表格名称，根据需要自己命名
-      //   })
-      // },
-      // formatJson(filterVal, jsonData) {
-      //   return jsonData.map(v => filterVal.map(j => v[j]))
-      // }
-
     }
   }
-  Date.prototype.Format = function(fmt)
-  { //author: meizz
-    var o = {
-      "M+" : this.getMonth()+1,                 //月份
-      "d+" : this.getDate(),                    //日
-      "h+" : this.getHours(),                   //小时
-      "m+" : this.getMinutes(),                 //分
-      "s+" : this.getSeconds(),                 //秒
-      "q+" : Math.floor((this.getMonth()+3)/3), //季度
-      "S"  : this.getMilliseconds()             //毫秒
-    };
-    if(/(y+)/.test(fmt))
-      fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-    for(var k in o)
-      if(new RegExp("("+ k +")").test(fmt))
-        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
-    return fmt;
-  }
+
 </script>
 
