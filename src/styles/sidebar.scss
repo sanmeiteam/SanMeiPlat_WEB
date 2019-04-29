@@ -3,8 +3,8 @@
   .main-container {
     min-height: 100%;
     transition: margin-left 0.28s;
-    margin-left: 180px;
-    margin-top:60px;  //为banner预留
+    padding-left: 180px;//自定义 margin改为padding
+    padding-top:60px;  //为banner预留
   } // 侧边栏
   .sidebar-container {
     transition: width 0.28s;
@@ -34,7 +34,7 @@
       // overflow: inherit;
     }
     .main-container {
-      margin-left: 36px;
+      padding-left: 36px; //自定义 margin改为padding
     }
   }
   .hideSidebar {

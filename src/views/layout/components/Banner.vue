@@ -1,22 +1,35 @@
 <template>
   <el-menu class="banner-container" mode="horizontal">
-    <div class="banner_title">三昧古中医平台</div>
-    <el-dropdown class="avatar-container" trigger="click">
-      <div class="avatar-wrapper">
-        <img class="user-avatar" :src="avatar+'?imageView2/1/w/80/h/80'">
-        <i class="el-icon-caret-bottom"></i>
-      </div>
-      <el-dropdown-menu class="user-dropdown" slot="dropdown">
-        <router-link class="inlineBlock" to="/">
-          <el-dropdown-item>
-            Home
-          </el-dropdown-item>
-        </router-link>
-        <el-dropdown-item divided>
-          <span @click="logout" style="display:block;">LogOut</span>
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+      <tr>
+        <td><div class="banner_title">三昧古中医平台</div></td>
+        <td></td>
+        <td width="200"><div class="userInfoCls" id="loginUserInfo"></div></td>
+        <td width="80">
+          <el-dropdown class="avatar-container" trigger="click">
+          <div class="avatar-wrapper">
+            <img class="user-avatar" :src="avatar+'?imageView2/1/w/80/h/80'">
+            <i class="el-icon-caret-bottom"></i>
+          </div>
+          <el-dropdown-menu class="user-dropdown" slot="dropdown">
+            <router-link class="inlineBlock" to="/">
+              <el-dropdown-item>
+                首页
+              </el-dropdown-item>
+            </router-link>
+            <router-link class="inlineBlock" to="/">
+              <el-dropdown-item>
+                修改密码
+              </el-dropdown-item>
+            </router-link>
+            <el-dropdown-item divided>
+              <span @click="logout" style="display:block;">退出</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        </td>
+      </tr>
+    </table>
   </el-menu>
 </template>
 
@@ -29,10 +42,14 @@ export default {
   components: {
     Breadcrumb
   },
+  mounted() {
+    document.getElementById("loginUserInfo").innerHTML="尊敬的 <span style='color:#00ccee;'>"+this.nickname+"</span> ，您好！";
+  },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'nickname'
     ])
   },
   methods: {
@@ -55,19 +72,26 @@ export default {
   z-index:1002;
   background-color:#24292e;
   border:solid 1px #24292e;
+
+  //平台名字样式
   .banner_title {
     font-size:30px;
     color:white;
-    float:left;
     font-family: "黑体" ;
     margin-left:20px;
-    margin-top:12px;
   }
+
+  //登录信息 样式
+  .userInfoCls {
+    font-size:15px;
+    color:#d3d3d3;
+    font-family: "黑体" ;
+  }
+
+  //登录头像 下拉
   .avatar-container {
     height: 50px;
     display: inline-block;
-    position: absolute;
-    right: 35px;
     .avatar-wrapper {
       cursor: pointer;
       margin-top: 5px;

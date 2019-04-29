@@ -4,12 +4,33 @@
       <el-form-item>
         <div class="filter-container">
           <div class="left-items" style="float: left;">
-            <el-select v-model="listQuery.courseId" placeholder="选择课程" style="width:250px;" @change="getList">
+            <el-select v-model="listQuery.courseId" placeholder="选择课程" style="width:250px;"
+                       @change="getDropList">
               <el-option label="请选择课程" value=""></el-option>
               <el-option
                 v-for="item in courses"
                 :key="item.id"
                 :label="item.courseName"
+                :value="item.id">
+              </el-option>
+            </el-select>
+            <el-select v-model="listQuery.tempScheduleId" clearable placeholder="选择课时"
+                       style="width:250px;" @change="getList" v-if="listQuery.courseId>''">
+              <el-option label="按课时查询" value=""></el-option>
+              <el-option
+                v-for="item in classSchedule"
+                :key="item.id"
+                :label="item.scheduleName"
+                :value="item.id">
+              </el-option>
+            </el-select>
+            <el-select v-model="listQuery.tempUserId" clearable placeholder="选择学员"
+                       style="width:250px;" @change="getList" v-if="listQuery.courseId>''">
+              <el-option label="按学员查询" value=""></el-option>
+              <el-option
+                v-for="item in classUsers"
+                :key="item.id"
+                :label="item.nickname"
                 :value="item.id">
               </el-option>
             </el-select>
@@ -37,13 +58,13 @@
 
       <!--<el-table-column align="center" label="用户id" prop="hwkUserId" width="120"></el-table-column>-->
       <!--<el-table-column align="center" label="用户名" prop="userName" width="100"></el-table-column>-->
-      <!--<el-table-column align="center" label="姓名" prop="nickName" width="100"></el-table-column>-->
+      <el-table-column align="center" label="姓名" prop="nickName" width="100"></el-table-column>
 
       <el-table-column align="center" label="标题" prop="title"></el-table-column>
       <!--<el-table-column align="center" label="内容" prop="content" width="80"></el-table-column>-->
       <el-table-column align="center" label="心得字数" prop="homeworkWords" width="80"></el-table-column>
       <el-table-column align="center" label="公开程度" prop="secret" width="80"></el-table-column>
-      <el-table-column align="center" label="讲师评阅" prop="comment" width="120"></el-table-column>
+      <el-table-column align="center" label="讲师评阅" prop="showComment" width="120"></el-table-column>
       <!--<el-table-column align="center" label="评阅学分" prop="reviewScore" width="100"></el-table-column>-->
       <!--<el-table-column align="center" label="评阅时间" prop="reviewTime" width="100"></el-table-column>-->
 
@@ -51,7 +72,7 @@
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
       <el-table-column align="center" label="管理" width="120" v-if="hasPerm('class:update')" fixed="right">
         <template slot-scope="scope">
-          <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">上传心得</el-button>
+          <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">评阅心得</el-button>
           <!--<el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"-->
           <!--@click="removeData(scope.$index)">删除-->
           <!--</el-button>-->
@@ -72,14 +93,14 @@
                style='margin-left:30px; margin-right:50px; ' >
         <el-row>
           <el-col :span="18">
-            <el-form-item label="心得标题" required>
-              <el-input type="text" v-model="tempData.title" style="width: 100%;">
+            <el-form-item label="心得标题">
+              <el-input type="text" v-model="tempData.title" style="width: 100%;" disabled="disabled">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="公开程度" required>
-              <el-select v-model="tempData.secret" placeholder="请选择" style="width:100%;">
+            <el-form-item label="公开程度">
+              <el-select v-model="tempData.secret" placeholder="请选择" style="width:100%;" disabled="disabled">
                 <el-option label="完全公开" value="完全公开"></el-option>
                 <el-option label="平台可见" value="平台可见"></el-option>
                 <el-option label="课程可见" value="课程可见"></el-option>
@@ -89,22 +110,44 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="心得内容" required >
+        <el-form-item label="心得内容" >
           <div>
             <quill-editor style="width:100%;"
                           v-model="tempData.content"
                           ref="myQuillEditor"
                           :options="editorOption"
-                          @keydown=""
+                          disabled="disabled"
             >
             </quill-editor>
           </div>
         </el-form-item>
+        <el-form-item label="讲师评阅" style="font-weight:bold;">
+          <el-input
+            type="textarea"
+            :rows="3"
+            placeholder="请输入内容"
+            v-model="tempData.comment">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="评阅学分" style="font-weight:bold;">
+          <!--<el-select v-model="tempData.reviewScore" placeholder="请选择" >-->
+            <!--<el-option label="4" value="4"></el-option>-->
+            <!--<el-option label="3" value="3"></el-option>-->
+            <!--<el-option label="2" value="2"></el-option>-->
+            <!--<el-option label="1" value="1"></el-option>-->
+            <!--<el-option label="0" value="0"></el-option>-->
+          <!--</el-select>-->
+          <el-rate
+            v-model="tempData.reviewScore"
+            show-score style="padding-top:9px;"
+            text-color="#ff9900"
+            score-template="  {value}分">
+          </el-rate>
+        </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;margin-top:-40px;">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="draftData">暂 存</el-button>
-        <el-button type="primary" @click="updateData">提 交</el-button>
+        <el-button type="primary" @click="reviewData">提 交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -121,7 +164,6 @@ marginBottom: 5,
 
 <style rel="stylesheet/scss" lang="scss" scoped>
   .button {
-
   }
 </style>
 
@@ -139,9 +181,13 @@ marginBottom: 5,
           keywords: '', //关键字查询
           role: '',//角色 班内角色
           courseId:'',
-          userId:'', //登录的用户id
+          tempUserId:'',//选择学员ID
+          userId:'', //登录用户ID
+          tempScheduleId:'', //选择课时ID
         },
         courses:[], //课程列表
+        classUsers:[], //班内人员列表
+        classSchedule:[], //课时列表
         dialogStatus: 'create',
         dialogFormVisible: false,
         textMap: {
@@ -169,7 +215,8 @@ marginBottom: 5,
           secret: '',
           comment: '',
           reviewScore: '',
-          reviewTime: ''
+          reviewTime: '',
+          reviewTeacherId: ''
         }
       }
     },
@@ -197,11 +244,34 @@ marginBottom: 5,
           this.courses = data.result;
         })
       },
+      getDropList(){
+        this.getCourseSchedule();
+        this.getClassUsers();
+        this.getList();
+      },
+      getCourseSchedule() {
+        this.api({
+          url: "/MyHomework/getCourseSchedule",
+          method: "get",
+          params: this.listQuery
+        }).then(data => {
+          this.classSchedule = data.result;
+        })
+      },
+      getClassUsers() {
+        this.api({
+          url: "/MyHomework/getClassUsers",
+          method: "get",
+          params: this.listQuery
+        }).then(data => {
+          this.classUsers = data.result;
+        })
+      },
       getList() {
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/MyHomework/list",
+          url: "/MyHomework/remarkList",
           method: "get",
           params: this.listQuery
         }).then(data => {
@@ -245,21 +315,21 @@ marginBottom: 5,
       showUpdate($index) {
         let tmp = this.list[$index];
         this.tempData.id=tmp.id;
-        this.tempData.courseId = tmp.courseId;
-        this.tempData.courseName = tmp.courseName;
-        this.tempData.scheduleId = tmp.scheduleId;
-        this.tempData.scheduleNo = tmp.scheduleNo;
-        this.tempData.scheduleName = tmp.scheduleName;
-        this.tempData.scheduleDate = tmp.scheduleDate;
-        this.tempData.lastDate = tmp.lastDate;
-
-        this.tempData.hwkUserId = tmp.hwkUserId;
-        this.tempData.userName = tmp.userName;
-        this.tempData.nickName = tmp.nickName;
+        // this.tempData.courseId = tmp.courseId;
+        // this.tempData.courseName = tmp.courseName;
+        // this.tempData.scheduleId = tmp.scheduleId;
+        // this.tempData.scheduleNo = tmp.scheduleNo;
+        // this.tempData.scheduleName = tmp.scheduleName;
+        // this.tempData.scheduleDate = tmp.scheduleDate;
+        // this.tempData.lastDate = tmp.lastDate;
+        //
+        // this.tempData.hwkUserId = tmp.hwkUserId;
+        // this.tempData.userName = tmp.userName;
+        // this.tempData.nickName = tmp.nickName;
 
         this.tempData.title=tmp.title;
         this.tempData.content=tmp.content;
-        this.tempData.homeworkWords=tmp.homeworkWords;
+        // this.tempData.homeworkWords=tmp.homeworkWords;
 
         if (tmp.secret =="" || tmp.secret == null ){
           this.tempData.secret="完全公开";
@@ -268,28 +338,29 @@ marginBottom: 5,
           this.tempData.secret=tmp.secret;
         }
         this.tempData.comment=tmp.comment;
-        this.tempData.reviewScore=tmp.reviewScore;
+        if (tmp.reviewScore=="" || tmp.reviewScore==null) {
+          this.tempData.reviewScore='4';
+        }
+        else{
+          this.tempData.reviewScore=tmp.reviewScore;
+        }
         this.tempData.reviewTime=tmp.reviewTime;
+        this.tempData.reviewTeacherId=this.userId;
 
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
       },
-      draftData() {
-        //暂存 草稿
-        let content=this.tempData.content;
-        let tmpContent=content.replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi,'').replace(/<[^>]+?>/g,'').replace(/\s+/g,' ').replace(/ /g,' ').replace(/>/g,' ');
-        let tmpWords=tmpContent.replace(/\s+/g,"").length;
-        this.tempData.content=this.tempData.content.replace(/\t+/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
-        this.tempData.homeworkWords=tmpWords;
-
+      reviewData() {
+        //保存&草稿
+        // this.tempData.comment=this.comment.content.replace(/\t+/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
         let _vue = this;
         this.api({
-          url: "/MyHomework/updateData",
+          url: "/MyHomework/remarkData",
           method: "post",
           data: this.tempData
         }).then(() => {
-          let msg = "保存成功";
-          this.dialogFormVisible = true;
+          let msg = "评阅成功";
+          this.dialogFormVisible = false;
           this.$message({
             message: msg,
             type: 'success',
@@ -300,85 +371,7 @@ marginBottom: 5,
           })
         })
       },
-      updateData() {
-        //修改信息
-        let content=this.tempData.content;
-        let tmpContent=content.replace(/<(style|script|iframe)[^>]*?>[\s\S]+?<\/\1\s*>/gi,'').replace(/<[^>]+?>/g,'').replace(/\s+/g,' ').replace(/ /g,' ').replace(/>/g,' ');
-        let tmpWords=tmpContent.replace(/\s+/g,"").length;
-        this.tempData.content=this.tempData.content.replace(/\t+/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
 
-        if (tmpWords<2000)
-        {
-          this.$confirm('您的心得字数不足2000, 是否继续提交?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            ///继续提交
-            this.tempData.homeworkWords=tmpWords;
-            let _vue = this;
-            this.api({
-              url: "/MyHomework/updateData",
-              method: "post",
-              data: this.tempData
-            }).then(() => {
-              let msg = "上传心得成功";
-              this.dialogFormVisible = false;
-              this.$message({
-                message: msg,
-                type: 'success',
-                duration: 1 * 1000,
-                onClose: () => {
-                  _vue.getList();
-                }
-              })
-            })
-
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消提交'
-            });
-          });
-
-          /////
-        }
-        else {
-
-          this.tempData.homeworkWords=tmpWords;
-          let _vue = this;
-          this.api({
-            url: "/MyHomework/updateData",
-            method: "post",
-            data: this.tempData
-          }).then(() => {
-            let msg = "上传心得成功";
-            this.dialogFormVisible = false;
-            this.$message({
-              message: msg,
-              type: 'success',
-              duration: 1 * 1000,
-              onClose: () => {
-                _vue.getList();
-              }
-            })
-          })
-
-          ////
-        }
-
-      },
-      handleEvent(event){
-        if(event.keyCode === 83 && event.ctrlKey){
-          console.log('拦截到83+ctrl');//ctrl+s
-          if (this.dialogFormVisible == true){
-            this.draftData();
-          }
-          event.preventDefault();
-          event.returnValue = false;
-          return false;
-        }
-      },
     }
   }
 

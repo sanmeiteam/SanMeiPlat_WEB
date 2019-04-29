@@ -43,7 +43,21 @@
       <!--<el-table-column align="center" label="内容" prop="content" width="80"></el-table-column>-->
       <el-table-column align="center" label="心得字数" prop="homeworkWords" width="80"></el-table-column>
       <el-table-column align="center" label="公开程度" prop="secret" width="80"></el-table-column>
-      <el-table-column align="center" label="讲师评阅" prop="comment" width="120"></el-table-column>
+      <el-table-column align="center" label="讲师评阅" prop="showComment" width="120"></el-table-column>
+      <el-table-column align="center" label="是否评阅" prop="isReview" width="80">
+        <template scope="scope">
+          <el-switch
+            active-color="#13ce66"
+            inactive-color="#dadde5"
+            active-value="1"
+            inactive-value="0"
+            v-model="scope.row.isReview"
+            disabled="disabled"
+          >
+          </el-switch>
+        </template>
+      </el-table-column>
+      <!--<el-table-column align="center" label="评阅人" prop="reviewTeacherId" width="120"></el-table-column>-->
       <!--<el-table-column align="center" label="评阅学分" prop="reviewScore" width="100"></el-table-column>-->
       <!--<el-table-column align="center" label="评阅时间" prop="reviewTime" width="100"></el-table-column>-->
 
@@ -72,13 +86,13 @@
                style='margin-left:30px; margin-right:50px; ' >
         <el-row>
           <el-col :span="18">
-            <el-form-item label="心得标题" required>
+            <el-form-item label="心得标题" style="font-weight:bold;" required>
               <el-input type="text" v-model="tempData.title" style="width: 100%;">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="公开程度" required>
+            <el-form-item label="公开程度" style="font-weight:bold;" required>
               <el-select v-model="tempData.secret" placeholder="请选择" style="width:100%;">
                 <el-option label="完全公开" value="完全公开"></el-option>
                 <el-option label="平台可见" value="平台可见"></el-option>
@@ -89,7 +103,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="心得内容" required >
+        <el-form-item label="心得内容" style="font-weight:bold;" required >
           <div>
             <quill-editor style="width:100%;"
                           v-model="tempData.content"
@@ -99,6 +113,30 @@
             >
             </quill-editor>
           </div>
+        </el-form-item>
+        <el-form-item label="讲师评阅" v-if="tempData.reviewTeacherId>'0'">
+          <el-input
+            type="textarea"
+            :rows="3"
+            placeholder="请输入内容"
+            v-model="tempData.comment" disabled="disabled">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="评阅学分" v-if="tempData.reviewTeacherId>'0'">
+          <!--<el-select v-model="tempData.reviewScore" placeholder="请选择" disabled="disabled">-->
+            <!--<el-option label="4" value="4"></el-option>-->
+            <!--<el-option label="3" value="3"></el-option>-->
+            <!--<el-option label="2" value="2"></el-option>-->
+            <!--<el-option label="1" value="1"></el-option>-->
+            <!--<el-option label="0" value="0"></el-option>-->
+          <!--</el-select>-->
+          <el-rate
+            v-model="tempData.reviewScore"
+            disabled
+            show-score style="padding-top:9px;"
+            text-color="#ff9900"
+            score-template="  {value}分">
+          </el-rate>
         </el-form-item>
       </el-form>
       <div slot="footer" style="text-align: center;margin-top:-40px;">
@@ -169,7 +207,8 @@ marginBottom: 5,
           secret: '',
           comment: '',
           reviewScore: '',
-          reviewTime: ''
+          reviewTime: '',
+          reviewTeacherId:  ''
         }
       }
     },
@@ -201,7 +240,7 @@ marginBottom: 5,
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/MyHomework/list",
+          url: "/MyHomework/hwkList",
           method: "get",
           params: this.listQuery
         }).then(data => {
@@ -270,6 +309,7 @@ marginBottom: 5,
         this.tempData.comment=tmp.comment;
         this.tempData.reviewScore=tmp.reviewScore;
         this.tempData.reviewTime=tmp.reviewTime;
+        this.tempData.reviewTeacherId=tmp.reviewTeacherId;
 
         this.dialogStatus = "update";
         this.dialogFormVisible = true;
@@ -284,7 +324,7 @@ marginBottom: 5,
 
         let _vue = this;
         this.api({
-          url: "/MyHomework/updateData",
+          url: "/MyHomework/uploadData",
           method: "post",
           data: this.tempData
         }).then(() => {
@@ -318,7 +358,7 @@ marginBottom: 5,
             this.tempData.homeworkWords=tmpWords;
             let _vue = this;
             this.api({
-              url: "/MyHomework/updateData",
+              url: "/MyHomework/uploadData",
               method: "post",
               data: this.tempData
             }).then(() => {
@@ -348,7 +388,7 @@ marginBottom: 5,
           this.tempData.homeworkWords=tmpWords;
           let _vue = this;
           this.api({
-            url: "/MyHomework/updateData",
+            url: "/MyHomework/uploadData",
             method: "post",
             data: this.tempData
           }).then(() => {
