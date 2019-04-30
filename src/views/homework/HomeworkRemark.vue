@@ -139,7 +139,7 @@
           <!--</el-select>-->
           <el-rate
             v-model="tempData.reviewScore"
-            show-score style="padding-top:9px;"
+            show-score style="padding-top:9px;" :max="4"
             text-color="#ff9900"
             score-template="  {value}分">
           </el-rate>
