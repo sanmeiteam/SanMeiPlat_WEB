@@ -158,12 +158,11 @@ export const asyncRouterMap = [
         menu: 'role'
       },
       {
-        path: 'article',
-        name: '文章',
-        component: _import('article/article'),
-        meta: {title: '文章', icon: 'example'},
-        menu: 'article',
-        hidden: true
+        path: 'organizer',
+        name: '承办方',
+        component: _import('user/organizer'),
+        meta: {title: '承办方', icon: 'team'},
+        menu: 'org'
       },
     ]
   },

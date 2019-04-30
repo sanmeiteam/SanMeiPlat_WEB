@@ -13,7 +13,7 @@
           </div>
           <el-dropdown-menu class="user-dropdown" slot="dropdown">
             <router-link class="inlineBlock" to="/">
-              <el-dropdown-item>
+              <el-dropdown-item @click="gotoIndex">
                 首页
               </el-dropdown-item>
             </router-link>
@@ -57,6 +57,9 @@ export default {
       this.$store.dispatch('LogOut').then(() => {
         location.reload() // 为了重新实例化vue-router对象 避免bug
       })
+    },
+    gotoIndex() {
+      ////跳到首页
     }
   }
 }
