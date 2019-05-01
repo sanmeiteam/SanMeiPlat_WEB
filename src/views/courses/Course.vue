@@ -22,12 +22,12 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="课程名称" prop="courseName" width="200"></el-table-column>
-      <el-table-column align="center" label="授课老师" prop="teacher" width="100"></el-table-column>
+      <el-table-column align="center" label="课程名称" prop="courseName" width="180"></el-table-column>
+      <el-table-column align="center" label="授课老师" prop="teacherName" width="100"></el-table-column>
       <el-table-column align="center" label="开始时间" prop="startTime" width="100"></el-table-column>
-      <el-table-column align="center" label="承办方" prop="organizer" width="160"></el-table-column>
-      <el-table-column align="center" label="地址" prop="address"></el-table-column>
-      <el-table-column align="center" label="报名老师" prop="signTeacher" width="100"></el-table-column>
+      <el-table-column align="center" label="承办方" prop="organizerName" width="160"></el-table-column>
+      <el-table-column align="center" label="地址" prop="address" width="250"></el-table-column>
+      <el-table-column align="center" label="报名老师" prop="signTeacherName" width="100"></el-table-column>
       <el-table-column align="center" label="报名电话" prop="signTel" width="120"></el-table-column>
       <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
@@ -56,7 +56,7 @@
           <el-col :span="12">
             <el-form-item label="课程类型" required>
               <el-select :filterable="true" v-model="tempData.courseTypeId" :clearable="true" placeholder="请输入课程类型" @change="setCourseName">
-                <el-option v-for="item in courseType" :key="item.id" :label="item.courseType" :value="item.id"></el-option>
+                <el-option v-for="item in courseTypeList" :key="item.id" :label="item.courseType" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -76,21 +76,23 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="授课老师" required>
-              <el-input type="text" v-model="tempData.teacher">
-              </el-input>
+              <el-select :filterable="true" v-model="tempData.teacher" :clearable="true" placeholder="请输入姓名">
+                <el-option v-for="item in userList" :key="item.id" :label="item.nickname" :value="item.id"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="承办方" required>
-              <el-input type="text" v-model="tempData.organizer">
-              </el-input>
+              <el-select :filterable="true" v-model="tempData.organizer" :clearable="true" placeholder="请输入姓名" @change="setOrganizerAddress">
+                <el-option v-for="item in organizerList" :key="item.id" :label="item.organizer" :value="item.id"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="承办地址" required>
-              <el-input type="text" v-model="tempData.address">
+              <el-input type="text" v-model="tempData.address" disabled="disabled">
               </el-input>
             </el-form-item>
           </el-col>
@@ -111,13 +113,14 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="报名老师" required>
-              <el-input type="text" v-model="tempData.signTeacher">
-              </el-input>
+              <el-select :filterable="true" v-model="tempData.signTeacher" :clearable="true" placeholder="请输入姓名" @change="setSignTeacherTel">
+                <el-option v-for="item in userList" :key="item.id" :label="item.nickname" :value="item.id"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="报名电话" required>
-              <el-input type="text" v-model="tempData.signTel">
+              <el-input type="text" v-model="tempData.signTel" disabled="disabled">
               </el-input>
             </el-form-item>
           </el-col>
@@ -145,7 +148,9 @@
           pageRow: 50,//每页条数
           keywords:"", //关键字查询
         },
-        courseType: [],//课程类型 下拉列表
+        courseTypeList: [],//课程类型 下拉列表
+        userList: [],//人员 下拉列表
+        organizerList: [],//承办方 下拉列表
         dialogStatus: 'create',
         dialogFormVisible: false,
         textMap: {
@@ -171,6 +176,8 @@
       this.getList();
       if (this.hasPerm('cos:add') || this.hasPerm('cos:update')) {
         this.getAllCourseType();
+        this.getUserList();
+        this.getOrganizeList();
       }
     },
     computed: {
@@ -184,7 +191,23 @@
           url: "/CosCourses/getCourseType",
           method: "get"
         }).then(data => {
-          this.courseType = data.result;
+          this.courseTypeList = data.result;
+        })
+      },
+      getUserList() {
+        this.api({
+          url: "/SysOrganizer/getUsers",
+          method: "get"
+        }).then(data => {
+          this.userList = data.result;
+        })
+      },
+      getOrganizeList() {
+        this.api({
+          url: "/SysOrganizer/getOrganizer",
+          method: "get"
+        }).then(data => {
+          this.organizerList = data.result;
         })
       },
       getList() {
@@ -241,7 +264,7 @@
         {
           let courseTypeId = this.tempData.courseTypeId;
           let courseType;
-          this.courseType.forEach(item=>{
+          this.courseTypeList.forEach(item=>{
             if (item.id === courseTypeId) {
               courseType = item.courseType;
             }
@@ -252,6 +275,31 @@
           this.tempData.courseName="";
         }
       },
+
+      //自动带出 承办方地址
+      setOrganizerAddress() {
+        let organizer = this.tempData.organizer;
+        let organizerAddress="";
+        this.organizerList.forEach(item=>{
+          if (item.id === organizer) {
+            organizerAddress = item.organizerAddress;
+          }
+        })
+        this.tempData.address=organizerAddress;
+      },
+
+      //自动带出 报名老师 电话
+      setSignTeacherTel() {
+        let signTeacher = this.tempData.signTeacher;
+        let signTel="";
+        this.userList.forEach(item=>{
+          if (item.id === signTeacher) {
+            signTel = item.phone;
+          }
+        })
+        this.tempData.signTel=signTel;
+      },
+
 
       showUpdate($index) {
         let course = this.list[$index];
