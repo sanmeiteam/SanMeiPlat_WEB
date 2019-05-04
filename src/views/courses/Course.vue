@@ -155,7 +155,7 @@
         dialogFormVisible: false,
         textMap: {
           update: '编辑',
-          create: '新建用户'
+          create: '新建课程'
         },
         tempData: {
           id:'',

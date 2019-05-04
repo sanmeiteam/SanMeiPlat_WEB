@@ -2,14 +2,14 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form>
-        <el-form-item label="课程种类">
-          <el-select :filterable="true" v-model="listQuery.id" :clearable="true" placeholder="请选择课程种类">
-            <el-option v-for="item in list" :key="item.id" :label="item.courseType" :value="item.id"></el-option>
-          </el-select>
-        </el-form-item>
+        <!--<el-form-item label="课程种类">-->
+          <!--<el-select :filterable="true" v-model="listQuery.id" :clearable="true" placeholder="请选择课程种类">-->
+            <!--<el-option v-for="item in list" :key="item.id" :label="item.courseType" :value="item.id"></el-option>-->
+          <!--</el-select>-->
+        <!--</el-form-item>-->
         <el-form-item>
-          <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="selectCosCourseType">查询</el-button>
-          <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">添加</el-button>
+          <!--<el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="selectCosCourseType">查询</el-button>-->
+          <el-button type="primary" icon="plus" v-if="hasPerm('cosType:add')" @click="showCreate">添加</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -21,10 +21,10 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="课程种类" prop="courseType" style="width: 60px;"></el-table-column>
-      <el-table-column align="center" label="是否有效" prop="deleteStatus" width="90"></el-table-column>
+      <!--<el-table-column align="center" label="是否有效" prop="deleteStatus" width="90"></el-table-column>-->
       <el-table-column align="center" label="创建时间" prop="createTime" width="200"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="200"></el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('user:update')">
+      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('cosType:update')">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
           <el-button type="danger" icon="delete" v-if="scope.row.userId!=userId "
@@ -43,16 +43,30 @@
       :page-sizes="[10, 20, 50, 100]"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form class="small-space" :model="tempData" label-position="right" label-width="120px"
+               style='width: 650px; margin-left:50px; margin-right:50px;'>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="课程类型" required>
+              <el-input type="text" v-model="tempData.courseType" placeholder="填写课程类型">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button v-if="dialogStatus=='create'" type="success" @click="createData">添 加</el-button>
+        <el-button type="primary" v-else @click="updateData">修 改</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
   import {mapGetters} from 'vuex'
-  // import AddCourseType from '@components/courses/addCourseTypeModel';
 
   export default {
-
-    // component: {AddCourseType},
-
     data() {
       return {
         totalCount: 0, //分页组件--数据总条数
@@ -69,19 +83,16 @@
         dialogFormVisible: false,
         textMap: {
           update: '编辑',
-          create: '新建用户'
+          create: '新建课程类型'
         },
-        tempUser: {
-          username: '',
-          password: '',
-          nickname: '',
-          roleId: '',
-          userId: ''
+        tempData: {
+          id:'',
+          courseType: ''
         }
       }
     },
     created() {
-      if (this.hasPerm('user:add') || this.hasPerm('user:update')) {
+      if (this.hasPerm('cosType:add') || this.hasPerm('cosType:update')) {
         this.getList();
       }
     },
@@ -91,20 +102,11 @@
       ])
     },
     methods: {
-      selectCosCourseType() {
-        this.api({
-          url: "/CosCourseType/selectCosCourseType",
-          method: "get",
-          params: this.listQuery
-        }).then(data => {
-          this.list = data.result;
-        })
-      },
       getList() {
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/CosCourseType/selectCosCourseType",
+          url: "/CosCourseType/list",
           method: "get",
           params: this.listQuery
         }).then(data => {
@@ -135,46 +137,41 @@
       },
 
       showCreate() {
-        //括号里面写传入的参数,新增时候可以不填,更新时候填入参数用于回显
-        console.log("0000")
-        debugger
-        this.$refs["addCourseType"].show();
+        //显示新增对话框
+        this.tempData.id = "";
+        this.tempData.courseType = "";
+        this.dialogStatus = "create"
+        this.dialogFormVisible = true
       },
+
       showUpdate($index) {
-        let user = this.list[$index];
-        this.tempUser.username = user.username;
-        this.tempUser.nickname = user.nickname;
-        this.tempUser.roleId = user.roleId;
-        this.tempUser.userId = user.userId;
-        this.tempUser.deleteStatus = '1';
-        this.tempUser.password = '';
+        let course = this.list[$index];
+        this.tempData.id=course.id;
+        this.tempData.courseType = course.courseType;
         this.dialogStatus = "update"
         this.dialogFormVisible = true
       },
-      createUser() {
+      createData() {
         //添加新用户
         this.api({
-          url: "/user/addUser",
+          url: "/CosCourseType/addData",
           method: "post",
-          data: this.tempUser
+          data: this.tempData
         }).then(() => {
           this.getList();
           this.dialogFormVisible = false
         })
       },
-      updateUser() {
+      updateData() {
         //修改用户信息
         let _vue = this;
         this.api({
-          url: "/user/updateUser",
+          url: "/CosCourseType/updateData",
           method: "post",
-          data: this.tempUser
+          data: this.tempData
         }).then(() => {
           let msg = "修改成功";
-          this.dialogFormVisible = false
-          if (this.userId === this.tempUser.userId) {
-            msg = '修改成功,部分信息重新登录后生效'
-          }
+          this.dialogFormVisible = false;
           this.$message({
             message: msg,
             type: 'success',
@@ -187,24 +184,25 @@
       },
       removeUser($index) {
         let _vue = this;
-        this.$confirm('确定删除此用户?', '提示', {
+        this.$confirm('确定删除?', '提示', {
           confirmButtonText: '确定',
           showCancelButton: false,
           type: 'warning'
         }).then(() => {
-          let user = _vue.list[$index];
-          user.deleteStatus = '2';
+          let course = _vue.list[$index];
           _vue.api({
-            url: "/user/updateUser",
+            url: "/CosCourseType/deleteData",
             method: "post",
-            data: user
+            data: course
           }).then(() => {
             _vue.getList()
           }).catch(() => {
             _vue.$message.error("删除失败")
           })
         })
-      },
+      }
+
+
     }
   }
 </script>
