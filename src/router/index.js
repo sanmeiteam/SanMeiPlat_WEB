@@ -6,6 +6,7 @@ const _import = require('./_import_' + process.env.NODE_ENV)
 Vue.use(Router)
 export const constantRouterMap = [
   {path: '/login', component: _import('login/index'), hidden: true},
+  {path: '/signin', component: _import('app/signIn'), hidden: true},
   {path: '/404', component: _import('404'), hidden: true},
   {
     path: '/',
@@ -19,7 +20,7 @@ export const constantRouterMap = [
   }
 ]
 export default new Router({
-  // mode: 'history', //后端支持可开
+  mode: 'history', //后端支持可开
   scrollBehavior: () => ({y: 0}),
   routes: constantRouterMap
 })
@@ -73,6 +74,13 @@ export const asyncRouterMap = [
         menu: 'cos'
       },
       {
+        path: 'Class',
+        name: '班级管理',
+        component: _import('courses/Class'),
+        meta: {title: '班级管理', icon: 'team'},
+        menu: 'class'
+      },
+      {
         path: 'CourseSchedule',
         name: '课程表',
         component: _import('courses/CourseSchedule'),
@@ -80,11 +88,11 @@ export const asyncRouterMap = [
         menu: 'schd'
       },
       {
-        path: 'Class',
-        name: '班级管理',
-        component: _import('courses/Class'),
-        meta: {title: '班级管理', icon: 'team'},
-        menu: 'class'
+        path: 'CourseSignIn',
+        name: '课程签到',
+        component: _import('courses/CourseSignIn'),
+        meta: {title: '课程签到', icon: 'check'},
+        menu: 'sign'
       },
       {
         path: 'CourseCalendar',
