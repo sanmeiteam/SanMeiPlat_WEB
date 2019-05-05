@@ -196,27 +196,12 @@ marginBottom: 5,
         },
         tempData: {
           id:'',
-          userId:'', //登录用户ID
-          courseId: '',
-          courseName: '',
+          userId:'', //  此处是 登录人
+          signUserId:'', //  此处是 签到人
           scheduleId: '',
-          scheduleNo: '',
-          scheduleName: '',
           scheduleDate: '',
-          lastDate: '',
-
-          hwkUserId: '',
-          userName: '',
-          nickName: '',
-
-          title: '',
-          content: '',
-          homeworkWords: '',
-          secret: '',
-          comment: '',
-          reviewScore: '',
-          reviewTime: '',
-          reviewTeacherId: ''
+          startTime: '',
+          signTime:'',
         }
       }
     },
@@ -225,7 +210,7 @@ marginBottom: 5,
       this.tempData.userId=this.userId;
       this.getCourses(); //获取所有课程信息
       //获取当前课程
-      this.getList(); //获取班级内人员信息
+      this.getList(); //获取签到信息
       document.addEventListener('keydown',this.handleEvent);
     },
     computed: {
@@ -271,7 +256,7 @@ marginBottom: 5,
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/MyHomework/remarkList",
+          url: "/SignIn/List",
           method: "get",
           params: this.listQuery
         }).then(data => {
@@ -309,57 +294,22 @@ marginBottom: 5,
         //表格序号
         return (this.listQuery.pageNum - 1) * this.listQuery.pageRow + $index + 1
       },
-      //自定义方法---
 
-
-      showUpdate($index) {
+      signData() {
+        //签到
         let tmp = this.list[$index];
-        this.tempData.id=tmp.id;
-        // this.tempData.courseId = tmp.courseId;
-        // this.tempData.courseName = tmp.courseName;
-        // this.tempData.scheduleId = tmp.scheduleId;
-        // this.tempData.scheduleNo = tmp.scheduleNo;
-        // this.tempData.scheduleName = tmp.scheduleName;
-        // this.tempData.scheduleDate = tmp.scheduleDate;
-        // this.tempData.lastDate = tmp.lastDate;
-        //
-        // this.tempData.hwkUserId = tmp.hwkUserId;
-        // this.tempData.userName = tmp.userName;
-        // this.tempData.nickName = tmp.nickName;
-
-        this.tempData.title=tmp.title;
-        this.tempData.content=tmp.content;
-        // this.tempData.homeworkWords=tmp.homeworkWords;
-
-        if (tmp.secret =="" || tmp.secret == null ){
-          this.tempData.secret="完全公开";
-        }
-        else {
-          this.tempData.secret=tmp.secret;
-        }
-        this.tempData.comment=tmp.comment;
-        if (tmp.reviewScore=="" || tmp.reviewScore==null) {
-          this.tempData.reviewScore='4';
-        }
-        else{
-          this.tempData.reviewScore=tmp.reviewScore;
-        }
-        this.tempData.reviewTime=tmp.reviewTime;
-        this.tempData.reviewTeacherId=this.userId;
-
-        this.dialogStatus = "update";
-        this.dialogFormVisible = true;
-      },
-      reviewData() {
-        //保存&草稿
-        // this.tempData.comment=this.comment.content.replace(/\t+/g,"&nbsp;&nbsp;&nbsp;&nbsp;");
+        this.tempData.scheduleId = tmp.scheduleId;
+        this.tempData.scheduleDate = tmp.scheduleDate;
+        this.tempData.startTime = tmp.startTime;
+        this.tempData.signTime = tmp.signTime;
+        this.tempData.signUserId = tmp.signTime;
         let _vue = this;
         this.api({
-          url: "/MyHomework/remarkData",
+          url: "/SignIn/addData",
           method: "post",
           data: this.tempData
         }).then(() => {
-          let msg = "评阅成功";
+          let msg = "签到成功";
           this.dialogFormVisible = false;
           this.$message({
             message: msg,
