@@ -24,19 +24,7 @@
                 :value="item.id">
               </el-option>
             </el-select>
-            <el-select v-model="listQuery.tempUserId" clearable placeholder="选择学员"
-                       style="width:250px;" @change="getList" v-if="listQuery.courseId>''">
-              <el-option label="按学员查询" value=""></el-option>
-              <el-option
-                v-for="item in classUsers"
-                :key="item.id"
-                :label="item.nickname"
-                :value="item.id">
-              </el-option>
-            </el-select>
-            <!--<el-input style="width: 200px" v-model="listQuery.keywords" placeholder="输入关键字"-->
-            <!--@keyup.enter.native="getList"></el-input>-->
-            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('class:list')"
+            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('sign:list')"
                        @click="getList">查询
             </el-button>
             <!--<el-button type="primary" icon="plus" v-if="hasPerm('class:add')&&listQuery.courseId>''" @click="showCreate">新增</el-button>-->
@@ -52,30 +40,20 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="课时名称" prop="scheduleName" width="80"></el-table-column>
-      <!--<el-table-column align="center" label="日期" prop="scheduleDate" width="100"></el-table-column>-->
-      <el-table-column align="center" label="最晚提交时间" prop="lastDate" width="120"></el-table-column>
-
-      <!--<el-table-column align="center" label="用户id" prop="hwkUserId" width="120"></el-table-column>-->
-      <!--<el-table-column align="center" label="用户名" prop="userName" width="100"></el-table-column>-->
+      <el-table-column align="center" label="课时名称" prop="scheduleName"></el-table-column>
+      <el-table-column align="center" label="日期" prop="scheduleDate" width="100"></el-table-column>
+      <el-table-column align="center" label="上课时间" prop="startTime" width="100"></el-table-column>
       <el-table-column align="center" label="姓名" prop="nickName" width="100"></el-table-column>
-
-      <el-table-column align="center" label="标题" prop="title"></el-table-column>
-      <!--<el-table-column align="center" label="内容" prop="content" width="80"></el-table-column>-->
-      <el-table-column align="center" label="心得字数" prop="homeworkWords" width="80"></el-table-column>
-      <el-table-column align="center" label="公开程度" prop="secret" width="80"></el-table-column>
-      <el-table-column align="center" label="讲师评阅" prop="showComment" width="120"></el-table-column>
-      <!--<el-table-column align="center" label="评阅学分" prop="reviewScore" width="100"></el-table-column>-->
-      <!--<el-table-column align="center" label="评阅时间" prop="reviewTime" width="100"></el-table-column>-->
-
+      <el-table-column align="center" label="是否签到" prop="isSign" width="80"></el-table-column>
+      <el-table-column align="center" label="签到状态" prop="signState" width="80"></el-table-column>
+      <el-table-column align="center" label="补签人" prop="signUserName" width="80"></el-table-column>
+      <el-table-column align="center" label="签到时间" prop="signTime" width="100"></el-table-column>
       <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
-      <el-table-column align="center" label="管理" width="120" v-if="hasPerm('class:update')" fixed="right">
+      <el-table-column align="center" label="管理" width="120" v-if="hasPerm('sign:add')" fixed="right">
         <template slot-scope="scope">
-          <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">评阅心得</el-button>
-          <!--<el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"-->
-          <!--@click="removeData(scope.$index)">删除-->
-          <!--</el-button>-->
+          <el-button type="primary" icon="edit" @click="signData(scope.$index)" v-if="list[scope.$index].isSign!='是'" >补签</el-button>
+          <el-button type="primary" icon="edit" v-if="list[scope.$index].isSign=='是'" disabled="disabled" >补签</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -88,68 +66,6 @@
       :page-sizes="[10, 20, 50, 100]"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" fullscreen="true">
-      <el-form class="small-space" :model="tempData" label-position="right" label-width="100px"
-               style='margin-left:30px; margin-right:50px; ' >
-        <el-row>
-          <el-col :span="18">
-            <el-form-item label="心得标题">
-              <el-input type="text" v-model="tempData.title" style="width: 100%;" disabled="disabled">
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="公开程度">
-              <el-select v-model="tempData.secret" placeholder="请选择" style="width:100%;" disabled="disabled">
-                <el-option label="完全公开" value="完全公开"></el-option>
-                <el-option label="平台可见" value="平台可见"></el-option>
-                <el-option label="课程可见" value="课程可见"></el-option>
-                <el-option label="班级可见" value="班级可见"></el-option>
-                <el-option label="个人可见" value="个人可见"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="心得内容" >
-          <div>
-            <quill-editor style="width:100%;"
-                          v-model="tempData.content"
-                          ref="myQuillEditor"
-                          :options="editorOption"
-                          disabled="disabled"
-            >
-            </quill-editor>
-          </div>
-        </el-form-item>
-        <el-form-item label="讲师评阅" style="font-weight:bold;">
-          <el-input
-            type="textarea"
-            :rows="3"
-            placeholder="请输入内容"
-            v-model="tempData.comment">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="评阅学分" style="font-weight:bold;">
-          <!--<el-select v-model="tempData.reviewScore" placeholder="请选择" >-->
-            <!--<el-option label="4" value="4"></el-option>-->
-            <!--<el-option label="3" value="3"></el-option>-->
-            <!--<el-option label="2" value="2"></el-option>-->
-            <!--<el-option label="1" value="1"></el-option>-->
-            <!--<el-option label="0" value="0"></el-option>-->
-          <!--</el-select>-->
-          <el-rate
-            v-model="tempData.reviewScore"
-            show-score style="padding-top:9px;" :max="4"
-            text-color="#ff9900"
-            score-template="  {value}分">
-          </el-rate>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" style="text-align: center;margin-top:-40px;">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="reviewData">提 交</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -197,11 +113,11 @@ marginBottom: 5,
         tempData: {
           id:'',
           userId:'', //  此处是 登录人
-          signUserId:'', //  此处是 签到人
+          signUser:'', //  此处是 签到人
           scheduleId: '',
           scheduleDate: '',
           startTime: '',
-          signTime:'',
+          signTime:''
         }
       }
     },
@@ -231,7 +147,7 @@ marginBottom: 5,
       },
       getDropList(){
         this.getCourseSchedule();
-        this.getClassUsers();
+        // this.getClassUsers();
         this.getList();
       },
       getCourseSchedule() {
@@ -295,14 +211,15 @@ marginBottom: 5,
         return (this.listQuery.pageNum - 1) * this.listQuery.pageRow + $index + 1
       },
 
-      signData() {
+      signData($index) {
         //签到
         let tmp = this.list[$index];
         this.tempData.scheduleId = tmp.scheduleId;
         this.tempData.scheduleDate = tmp.scheduleDate;
         this.tempData.startTime = tmp.startTime;
         this.tempData.signTime = tmp.signTime;
-        this.tempData.signUserId = tmp.signTime;
+        this.tempData.signUser = tmp.signUser;
+
         let _vue = this;
         this.api({
           url: "/SignIn/addData",
@@ -314,7 +231,7 @@ marginBottom: 5,
           this.$message({
             message: msg,
             type: 'success',
-            duration: 1 * 1000,
+            duration: 1 * 500,
             onClose: () => {
               _vue.getList();
             }
