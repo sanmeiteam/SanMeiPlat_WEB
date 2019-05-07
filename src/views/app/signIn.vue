@@ -6,8 +6,8 @@
       <h3 class="title">课程签到</h3>
       <div class="welcome">
         欢迎来到
-        <span id="courseName">灵龟八法初级班39期</span>
-        <span id="scheduleName">第3课</span>
+        <span id="courseName"></span>
+        <span id="scheduleName"></span>
       </div>
       <el-form-item required>
         <el-input v-model="checkinForm.username" placeholder="请填写姓名" />
@@ -24,13 +24,24 @@
   </div>
 </template>
 <script>
+  import axios from 'axios'
   export default {
+    getUrlKey: function (name) {
+      return decodeURIComponent(
+        (new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [, ""])[1].replace(/\+/g, '%20')) || null;
+    },
     name: 'login',
     data() {
       return {
+        totalCount: 0, //分页组件--数据总条数
+        list: [],//表格的数据
+        listLoading: false,//数据加载等待动画
         checkinForm: {
-          username: '',
-          phone: ''
+          nickname: '',
+          phone: '',
+          tempScheduleId:'',
+          courseName:'',
+          scheduleName:''
         },
         checkinRules: {
           username: [{required: true, trigger: 'blur', message: "请输入姓名"}],
@@ -39,9 +50,41 @@
         loading: false
       }
     },
+    created() {
+      this.getInfo(); //获取当前课时信息
+      this.getSignedNum();//获取已签到人数
+    },
     methods: {
-      userCheckin() {
+      getSignedNum() {
+        /////
+      },
+      getInfo() {
+        //获取当前课时信息
+        this.checkinForm.tempScheduleId="2";
+        this.listLoading = true;
+        let totalCount=0;
+        axios.get("api/sign/list",{
+          params:this.checkinForm
+        }).then(function (response) {
+          console.log(response);
+          totalCount = response.data.result.length;
+          if (totalCount>0){
+            // this.checkinForm.courseName=data.result[0].courseName;
+            // this.checkinForm.scheduleName=data.result[0].scheduleName;
+            document.getElementById("courseName").innerHTML=response.data.result[0].courseName;
+            document.getElementById("scheduleName").innerHTML=response.data.result[0].scheduleName;
+          }
+          else {
+            document.getElementById("courseName").innerHTML="课程信息无效,请联系承办方";
+          }
+        })
+          .catch(function (error) {
+            console.log(error);
+          });
 
+
+      },
+      userCheckin() {
 
         this.$refs.checkinForm.validate(valid => {
           if (valid) {
@@ -49,7 +92,7 @@
 
             let _vue = this;
             this.api({
-              url: "/CosCourseSchedule/updateData",
+              url: "/SignIn/appSignData",
               method: "post",
               data: this.checkinForm
             }).then(() => {

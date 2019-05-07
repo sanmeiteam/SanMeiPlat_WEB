@@ -172,7 +172,7 @@ marginBottom: 5,
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/SignIn/List",
+          url: "/sign/list",
           method: "get",
           params: this.listQuery
         }).then(data => {
@@ -222,7 +222,7 @@ marginBottom: 5,
 
         let _vue = this;
         this.api({
-          url: "/SignIn/addData",
+          url: "/sign/addData",
           method: "post",
           data: this.tempData
         }).then(() => {
