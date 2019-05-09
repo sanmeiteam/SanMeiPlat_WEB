@@ -21,6 +21,9 @@ import 'quill/dist/quill.bubble.css'
 import '@/styles/index.scss' // global css
 Vue.use(VueQuillEditor)
 
+//获取移动设备信息
+//import md from 'mobile-detect'
+
 Vue.use(ElementUI, {locale})
 Vue.prototype.api = api
 //全局的常量
