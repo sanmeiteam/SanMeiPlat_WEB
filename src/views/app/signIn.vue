@@ -1,87 +1,51 @@
 <template>
   <div class="login-container">
-    <el-form autoComplete="on" :model="checkinForm" :rules="checkinRules" ref="checkinForm" label-position="left"
+    <el-form autoComplete="on" :model="checkinForm" ref="checkinForm" label-position="left"
              label-width="0px"
              class="card-box login-form">
       <h3 class="title">课程签到</h3>
-      <div class="welcome">
+      <div class="welcome" style="font-weight: bold;">
         欢迎来到
         <span id="courseName"></span>
-        <span id="scheduleName"></span>
+        <span id="scheduleName"></span><br>
+        请于&nbsp;<span id="scheduleDate"></span>&nbsp;<span id="startTime"></span>&nbsp;之前签到
       </div>
-      <el-divider content-position="left">课程信息</el-divider>
-
-      <div class="welcome">
-        <table cellspacing="0" cellpadding="0" width="80%">
-          <tr>
-            <td>班级总人数：</td>
-            <td id="totalNum"></td>
-          </tr>
-          <tr>
-            <td>已签到人数:</td>
-            <td id="signedNum"></td>
-          </tr>
-          <tr>
-            <td>已签到人员：</td>
-            <td id="signedMember"></td>
-          </tr>
-          <tr>
-            <td>未签到人数:</td>
-            <td id="unSignedNum"></td>
-          </tr>
-          <tr>
-            <td>未签到人员：</td>
-            <td id="unSignedMember"></td>
-          </tr>
-        </table>
-      </div>
-
-      <el-divider content-position="left">请签到</el-divider>
-      <el-form-item required>
-        <el-input v-model="checkinForm.username" placeholder="请填写姓名" />
+      <el-form-item>
+        <el-input v-model="checkinForm.nickName" placeholder="请填写姓名" />
       </el-form-item>
-      <el-form-item required>
+      <el-form-item>
         <el-input v-model="checkinForm.phone" placeholder="请填写手机号" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" style="width:100%;" :loading="loading" @click.native.prevent="userCheckin">
+        <el-button type="primary" style="width:100%;" @click="userCheckin">
           签到
         </el-button>
       </el-form-item>
+      <div id="signSwitch" class="welcome" style="display: none;">
+        <div class="info">
+          尊敬的<span id="nickName" style="color:blue;"></span>老师，
+          您已于<span id="signTime" style="color:blue;"></span>签到成功！
+          签到状态为：<span id="signState" style="color:blue;"></span>
+          <span id="isSign" style="display: none;"></span>
+          <span id="phone" style="display:none;"></span>
+        </div>
 
-      <el-divider content-position="left">签到信息</el-divider>
+      </div>
       <div class="welcome">
-        <table cellspacing="0" cellpadding="0" width="80%">
-          <tr>
-            <td>是否签到:</td>
-            <td id="isSign"></td>
-          </tr>
-          <tr>
-            <td>签到人:</td>
-            <td id="nickName"></td>
-          </tr>
-          <tr>
-            <td>电话:</td>
-            <td id="phone"></td>
-          </tr>
-          <tr>
-            <td>签到时间:</td>
-            <td id="signTime"></td>
-          </tr>
-          <tr>
-            <td>签到状态:</td>
-            <td id="signState"></td>
-          </tr>
-          <tr>
-            <td>签到设备标识:</td>
-            <td id="signDev"></td>
-          </tr>
-        </table>
+        已签到人数:&nbsp;<span id="signedNum"></span>人/共<span id="totalNum"></span>人
+      </div>
+      <div class="info">
+        已签到人员：<span id="signedMember"></span>
+      </div>
+      <div class="info">
+        未签到人员：<span id="unSignedMember"></span>
+      </div>
+      <div class="info" style="display: none;">
+        签到设备标识：<span id="signDev"></span>
       </div>
     </el-form>
   </div>
 </template>
-
 
 <script>
   import axios from 'axios'
@@ -96,144 +60,175 @@
       return {
         totalCount: 0, //分页组件--数据总条数
         list: [],//表格的数据
-        listLoading: false,//数据加载等待动画
+        isUAExist:0,//是否该设备已经签到过
         checkinForm: {
           tempScheduleId:'',
           courseName:'',
           scheduleName:'',
-
+          scheduleDate:'',
+          startTime:'',
+          ////个人信息
+          signUser:'',
           nickName: '',
           phone: '',
           isSign: '',
           signTime: '',
           signState: '',
           signDev: ''
-        },
-        loading: false
+        }
       }
     },
-    created() {
+    mounted() {
       this.getInfo(); //获取当前课时信息
-      //this.getSignedNum();//获取已签到人数
-      //alert(getUA);
     },
     methods: {
-      getSignedNum() {
-        /////
-      },
       getInfo() {
-        // if (!isMobile)
-        // {
-        //   alert("此功能仅支持移动端！");
-        //   return;
-        // }
         //获取当前课时信息
+        document.getElementById("signSwitch").style.display = "none";
         this.checkinForm.tempScheduleId="2";
-        this.listLoading = true;
         let totalCount=0;
-        let _vue=this;
+        let tempParams={};
+        let _this=this;
         let signedNum=0;
-        let unSignedNum=0;
-        let curUA=getUA;
-        let isUAExist=0;
+        let signedMember="";
+        let unSignedMember="";
+        tempParams=this.checkinForm;
+        //alert(getUA);
+        //document.getElementById("signDev").innerHTML = getUA;
         axios.get("api/sign/list",{
-          params:this.checkinForm
-        }).then(function (response) {
-          console.log(response);
-          _vue.list=response.data.result;
-          totalCount = response.data.result.length;
-          _vue.list.forEach(item=>{
-            if (item.isSign === '是') {
-              signedNum ++; //统计已签到人数
-              if (curUA!="" &&curUA!=item.signDev){
-                isUAExist=1; //判断该设备信息的设备是否已经签到过
-              }
-            }
-          })
-
-
-          //计算未签到人数
-          unSignedNum=totalCount - signedNum;
-
-          //alert("已签到人数："+signedNum+";未签到人数："+unSignedNum);
-
-          if (totalCount>0){
-            document.getElementById("courseName").innerHTML=response.data.result[0].courseName;
-            document.getElementById("scheduleName").innerHTML=response.data.result[0].scheduleName;
-            document.getElementById("nickName").innerHTML=response.data.result[0].nickName;
-            document.getElementById("phone").innerHTML=response.data.result[0].phone;
-            document.getElementById("isSign").innerHTML=response.data.result[0].isSign;
-            document.getElementById("signTime").innerHTML=response.data.result[0].signTime;
-            document.getElementById("signState").innerHTML=response.data.result[0].signState;
-            document.getElementById("signDev").innerHTML=response.data.result[0].signDev;
-          }
-          else {
-            document.getElementById("courseName").innerHTML="课程信息无效,请联系承办方";
-          }
+          params:tempParams
         })
-          .catch(function (error) {
-            console.log(error);
-          });
-
-      },
-      userCheckin() {
-        this.loading = true
-        let _vue=this;
-        let username = _vue.checkinForm.username;
-        let phone = _vue.checkinForm.phone;
-        let isSigned=0;
-        let curUA=getUA;
-        let isUAExist=0;
-        _vue.list.forEach(item => {
-          if (item.username === username && item.phone === phone) {
-            ////该人员已经签到
-            isSigned=1;
-          }
-          if (curUA!="" &&curUA!=item.signDev){
-            isUAExist=1; //判断该设备信息的设备是否已经签到过
-          }
-        });
-        axios.post("api/sign/sign",{
-          params:this.checkinForm
-        }).then(function (response) {
-            console.log(response);
-            let msg = "签到成功";
-            this.loading=false;
-            this.$message({
-              message: msg,
-              type: 'success',
-              duration: 1 * 1000,
-              onClose: () => {
-
+          .then( (response) => {
+            _this.list = response.data.result;
+            totalCount = _this.list.length;
+            if (totalCount<=0) {
+              alert("页面加载失败，请联系管理员！");
+              return ;
+            }
+            else{
+              _this.checkinForm.courseName=_this.list[0].courseName;
+              _this.checkinForm.scheduleName=_this.list[0].scheduleName;
+              _this.checkinForm.scheduleDate=_this.list[0].scheduleDate;
+              _this.checkinForm.startTime=_this.list[0].startTime;
+              document.getElementById("courseName").innerHTML=_this.checkinForm.courseName;
+              document.getElementById("scheduleName").innerHTML=_this.checkinForm.scheduleName;
+              document.getElementById("scheduleDate").innerHTML=_this.checkinForm.scheduleDate;
+              document.getElementById("startTime").innerHTML=_this.checkinForm.startTime;
+            }
+            _this.list.forEach(item=>{
+              if (item.isSign === '是') {
+                signedNum ++; //统计已签到人数
+                signedMember += item.nickName+"&nbsp;";
+                if (getUA > "" && getUA == item.signDev){
+                  _this.isUAExist=1; //判断该设备信息的设备是否已经签到过
+                  document.getElementById("signSwitch").style.display="block";
+                  document.getElementById("nickName").innerHTML=item.nickName;
+                  document.getElementById("phone").innerHTML=item.phone;
+                  document.getElementById("isSign").innerHTML=item.isSign;
+                  document.getElementById("signTime").innerHTML=item.signTime;
+                  document.getElementById("signState").innerHTML=item.signState;
+                  if (item.signState=="正常")
+                  {
+                    document.getElementById("signState").style.color="blue";
+                  }
+                  else
+                  {
+                    document.getElementById("signState").style.color="red";
+                  }
+                }
               }
+              else{
+                unSignedMember += item.nickName+"&nbsp;";
+              }
+              document.getElementById("totalNum").innerHTML=totalCount;
+              document.getElementById("signedNum").innerHTML=signedNum;
+              document.getElementById("signedMember").innerHTML=signedMember;
+              document.getElementById("unSignedMember").innerHTML=unSignedMember;
             })
           })
-          .catch(function (error) {
-            console.log(error);
-            let msg = "签到失败，请检查签到信息";
-            this.dialogFormVisible = false;
-            this.$message({
-              message: msg,
-              type: 'error',
-              duration: 1 * 1000,
-              onClose: () => {
-              }
-            });
+          .catch((error) => {
+          console.log(error);
+          alert("获取数据异常，请联系管理员！");
           });
+      },
+      userCheckin() {
+        let _vue=this;
+
+        let date=new Date();
+        let ddate=new Date(Date.parse(_vue.checkinForm.scheduleDate + " " +_vue.checkinForm.startTime));
+        if (date.Format("yyyy-MM-dd") == ddate.Format("yyyy-MM-dd") && date.Format("hh:mm:ss")>=ddate.Format("hh:mm:ss"))
+        {
+          //alert(_vue.getLocalTime(ddate.setHours(ddate.getHours()+4)));
+
+          alert("当前时间不在签到时间内！");
+          return;
+        }
+        let isExist=0;//人员是否存在  0是不存在  1是存在
+        if (this.isUAExist==1) {////通过设备判断
+          alert("该设备已经签到过，不能重复签到！");
+          return;
+        }
+        ///判断有效时间内签到
+
+        _vue.list.forEach(item => {
+          if (item.nickName == _vue.checkinForm.nickName && item.phone == _vue.checkinForm.phone) {////该人员存在
+            isExist = 1;
+            if (item.isSign=="是"){///已经签到
+              alert("该人员已经签到，无需重复签到！");
+            }
+            else{
+              _vue.checkinForm.signUser=item.signUser;
+              _vue.checkinForm.scheduleDate=item.scheduleDate;
+              _vue.checkinForm.startTime=item.startTime;
+              _vue.checkinForm.isSign="是";
+              _vue.checkinForm.signState="正常";
+              _vue.checkinForm.signDev=getUA;
+              axios.post("api/sign/sign",this.checkinForm).then((response) => {
+                alert("签到成功，祝您学习愉快！");
+                this.getInfo();
+                document.getElementById("signSwitch").style.display="block";
+              }).catch( (error) => {
+                console.log(error);
+                alert("签到异常，请联系管理员！");
+              })
+            }
+          }
+        });
+        if (isExist==0){
+          alert("该人员不存在，或填写信息有误！");
+        }
+      },
+      getLocalTime(nS) {
+        return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ');
       }
+
     }
+  }
+  Date.prototype.Format = function(fmt)
+  { //author: meizz
+    var o = {
+      "M+" : this.getMonth()+1,                 //月份
+      "d+" : this.getDate(),                    //日
+      "h+" : this.getHours(),                   //小时
+      "m+" : this.getMinutes(),                 //分
+      "s+" : this.getSeconds(),                 //秒
+      "q+" : Math.floor((this.getMonth()+3)/3), //季度
+      "S"  : this.getMilliseconds()             //毫秒
+    };
+    if(/(y+)/.test(fmt))
+      fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    for(var k in o)
+      if(new RegExp("("+ k +")").test(fmt))
+        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+    return fmt;
   }
 </script>
 <style rel="stylesheet/scss" lang="scss">
   @import "../../styles/mixin.scss";
-  $bg: #2d3a4b;
-  $dark_gray: #889aa4;
-  $light_gray: #eee;
-
   .login-container {
     @include relative;
     height: 100vh;
-    background-color: $bg;
+    background-color: #fff;
     input:-webkit-autofill {
       -webkit-box-shadow: 0 0 0px 1000px #293444 inset !important;
       -webkit-text-fill-color: #fff !important;
@@ -244,7 +239,7 @@
       -webkit-appearance: none;
       border-radius: 0px;
       padding: 1rem 3rem 3rem 3rem;
-      color: $light_gray;
+      color: #000;
       height: 10rem;
     }
     .el-input {
@@ -260,17 +255,23 @@
     }
     el-divider {
       font-size:4rem;
-      color: $light_gray;
+      color: #000;
     }
     .welcome {
       font-size: 3rem;
-      color: #fff;
-      margin-top: 10rem;
+      color: #000;
+      margin-top: 5rem;
       margin-bottom: 3rem;
+    }
+    .info{
+      font-size: 3rem;
+      color: #000;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
     }
     .title {
       font-size: 5rem;
-      color: $light_gray;
+      color: #000;
       margin: 2rem auto 2rem auto;
       text-align: center;
       font-weight: bold;
@@ -285,7 +286,7 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(0, 0, 0, 0.1);
       border-radius: 5px;
-      margin-top:5rem;
+      margin-top:3rem;
       color: #454545;
     }
   }
