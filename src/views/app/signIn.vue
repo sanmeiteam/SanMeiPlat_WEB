@@ -85,7 +85,8 @@
       getInfo() {
         //获取当前课时信息
         document.getElementById("signSwitch").style.display = "none";
-        this.checkinForm.tempScheduleId="2";
+        let tempid=decodeURIComponent(window.location.href.split('=')[0].split('?')[1]).split('a')[1];
+        this.checkinForm.tempScheduleId="" + parseInt((tempid-7)/13);
         let totalCount=0;
         let tempParams={};
         let _this=this;
@@ -154,34 +155,44 @@
       userCheckin() {
         let _vue=this;
 
+        // 1. 判断时间是否在有效签到时间内
         let date=new Date();
+        let signState="";//判断签到状态  正常，迟到
         let ddate=new Date(Date.parse(_vue.checkinForm.scheduleDate + " " +_vue.checkinForm.startTime));
-        if (date.Format("yyyy-MM-dd") == ddate.Format("yyyy-MM-dd") && date.Format("hh:mm:ss")>=ddate.Format("hh:mm:ss"))
-        {
-          //alert(_vue.getLocalTime(ddate.setHours(ddate.getHours()+4)));
-
+        if (date.Format("yyyy-MM-dd") == ddate.Format("yyyy-MM-dd") && date.Format("hh:mm:ss")<=new Date(ddate.getTime() + 1 * 60 * 60 * 1000).Format("hh:mm:ss")){
+         ////       当前日期==课程开课日期      &&    当前时间<=开课时间+1h  （允许迟到1小时，超过1小时为旷课）
+          if (date.Format("hh:mm:ss")<=ddate.Format("hh:mm:ss")){
+            signState="正常";
+          }
+          else{
+            signState="迟到";
+          }
+        }
+        else{
           alert("当前时间不在签到时间内！");
           return;
         }
-        let isExist=0;//人员是否存在  0是不存在  1是存在
+        // 2. 人员是否存在  0是不存在  1是存在
+        let isExist=0;
+        // 3. 判断该设备是否重复签到
         if (this.isUAExist==1) {////通过设备判断
           alert("该设备已经签到过，不能重复签到！");
           return;
         }
-        ///判断有效时间内签到
-
+        // 4. 循环查找该人员是否存在或签到
         _vue.list.forEach(item => {
           if (item.nickName == _vue.checkinForm.nickName && item.phone == _vue.checkinForm.phone) {////该人员存在
             isExist = 1;
             if (item.isSign=="是"){///已经签到
               alert("该人员已经签到，无需重复签到！");
             }
-            else{
+            else{///未签到  ==执行签到==
               _vue.checkinForm.signUser=item.signUser;
               _vue.checkinForm.scheduleDate=item.scheduleDate;
               _vue.checkinForm.startTime=item.startTime;
               _vue.checkinForm.isSign="是";
-              _vue.checkinForm.signState="正常";
+              _vue.checkinForm.signState=signState;//签到状态
+              _vue.checkinForm.signTime=date.Format("yyyy-MM-dd hh:mm:ss");
               _vue.checkinForm.signDev=getUA;
               axios.post("api/sign/sign",this.checkinForm).then((response) => {
                 alert("签到成功，祝您学习愉快！");

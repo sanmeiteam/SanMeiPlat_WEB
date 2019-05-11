@@ -25,8 +25,8 @@
       <el-table-column align="center" label="课程名称" prop="courseName" width="180"></el-table-column>
       <el-table-column align="center" label="授课老师" prop="teacherName" width="100"></el-table-column>
       <el-table-column align="center" label="开始时间" prop="startTime" width="100"></el-table-column>
-      <el-table-column align="center" label="承办方" prop="organizerName" width="160"></el-table-column>
-      <el-table-column align="center" label="地址" prop="address" width="250"></el-table-column>
+      <el-table-column align="center" label="承办方" prop="organizerName" width="180"></el-table-column>
+      <el-table-column align="center" label="地址" prop="address" width="230"></el-table-column>
       <el-table-column align="center" label="报名老师" prop="signTeacherName" width="100"></el-table-column>
       <el-table-column align="center" label="报名电话" prop="signTel" width="120"></el-table-column>
       <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>

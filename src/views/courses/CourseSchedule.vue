@@ -45,8 +45,9 @@
       <!--<el-table-column align="center" label="讲师评阅" prop="reviewScore" width="80"></el-table-column>-->
       <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
-      <el-table-column align="center" label="管理" width="180" v-if="hasPerm('class:update')" fixed="right">
+      <el-table-column align="center" label="管理" width="320" v-if="hasPerm('class:update')" fixed="right">
         <template slot-scope="scope">
+          <el-button type="success" icon="edit" @click="showQRCode(scope.$index)">签到二维码</el-button>
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
           <el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"
                      @click="removeData(scope.$index)">删除
@@ -192,6 +193,15 @@
         <el-button type="primary" v-else @click="updateData">修 改</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="QRCodeDialogFormVisible" style="margin-top:-5vh;">
+      <el-form class="small-space" :model="tempData" label-position="right" label-width="120px"
+               style='width: 500px;'>
+        <div style="width:500px;text-align:center; margin-left: 150px;margin-top:-50px;">
+          <canvas id="canvas"></canvas>
+        </div>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -212,6 +222,7 @@ marginBottom: 5,
 
 <script>
   import {mapGetters} from 'vuex'
+  import QRCode from 'qrcode'
   export default {
     data() {
       return {
@@ -229,9 +240,11 @@ marginBottom: 5,
         courses:[], //课程列表
         dialogStatus: 'create',
         dialogFormVisible: false,
+        QRCodeDialogFormVisible: false,
         textMap: {
           update: '编辑',
-          create: '添加'
+          create: '添加',
+          qrcode: '签到二维码'
         },
         tempData: {
           id:'',
@@ -248,7 +261,8 @@ marginBottom: 5,
           homeworkTimeScore: '',
           homeworkWordsScore: '',
           reviewScore: ''
-        }
+        },
+        codes:''
       }
     },
     created() {
@@ -262,6 +276,9 @@ marginBottom: 5,
         'id',
         'userId'
       ])
+    },
+    components: {
+      QRCode: QRCode
     },
     methods: {
       getCourses() {
@@ -420,6 +437,26 @@ marginBottom: 5,
             _vue.$message.error("删除失败")
           })
         })
+      },
+      showQRCode($index) {
+        let schd = this.list[$index];
+        this.tempData.id = schd.id;
+        let tempid1=this.tempData.id * 3134 + 1;
+        let tempid2=this.tempData.id * 13 + 7;
+        this.dialogStatus = "qrcode";
+        this.QRCodeDialogFormVisible = true;
+
+        let url="http://" + window.location.href.split('/')[2] +"/signin?"+encodeURIComponent("="+tempid1 + "a" + tempid2);
+        window.setTimeout(function(){
+          let canvas = document.getElementById('canvas');
+          QRCode.toCanvas(canvas, url,{
+            width:450,
+            height:450,
+          } , function (error) {
+            if (error) console.error(error)
+            console.log('success!');
+          })
+        },100);
       },
       exportTable() {
         require.ensure([], () => {

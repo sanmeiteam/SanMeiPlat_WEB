@@ -65,7 +65,7 @@
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
       <el-table-column align="center" label="管理" width="120" v-if="hasPerm('class:update')" fixed="right">
         <template slot-scope="scope">
-          <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">上传心得</el-button>
+          <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">写心得</el-button>
           <!--<el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"-->
           <!--@click="removeData(scope.$index)">删除-->
           <!--</el-button>-->
