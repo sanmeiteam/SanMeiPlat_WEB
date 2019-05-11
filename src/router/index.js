@@ -11,11 +11,11 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/personal/',
     name: '首页',
     hidden: true,
     children: [{
-      path: 'dashboard', component: _import('dashboard/index')
+      path: 'MyPage', component: _import('personal/MyPage')
     }]
   }
 ]

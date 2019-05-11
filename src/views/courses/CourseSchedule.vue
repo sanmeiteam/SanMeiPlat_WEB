@@ -198,7 +198,8 @@
       <el-form class="small-space" :model="tempData" label-position="right" label-width="120px"
                style='width: 500px;'>
         <div style="width:500px;text-align:center; margin-left: 150px;margin-top:-50px;">
-          <canvas id="canvas"></canvas>
+          <canvas id="canvas" style="display: none;"></canvas>
+          <img id="img">
         </div>
       </el-form>
     </el-dialog>
@@ -262,7 +263,8 @@ marginBottom: 5,
           homeworkWordsScore: '',
           reviewScore: ''
         },
-        codes:''
+        codes:'',
+        imgUrl:''
       }
     },
     created() {
@@ -445,17 +447,17 @@ marginBottom: 5,
         let tempid2=this.tempData.id * 13 + 7;
         this.dialogStatus = "qrcode";
         this.QRCodeDialogFormVisible = true;
-
         let url="http://" + window.location.href.split('/')[2] +"/signin?"+encodeURIComponent("="+tempid1 + "a" + tempid2);
         window.setTimeout(function(){
           let canvas = document.getElementById('canvas');
           QRCode.toCanvas(canvas, url,{
-            width:450,
-            height:450,
+            width:400,
+            height:400,
           } , function (error) {
             if (error) console.error(error)
             console.log('success!');
-          })
+          });
+          document.getElementById("img").src = canvas.toDataURL();
         },100);
       },
       exportTable() {

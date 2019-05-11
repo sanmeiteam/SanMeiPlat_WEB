@@ -12,6 +12,8 @@ import {default as api} from './utils/api'
 import {hasPermission} from "./utils/hasPermission";
 import Blob from './excel/Blob.js';
 import Export2Excel from './excel/Export2Excel.js';
+//import 'lib-flexible'  ///移动端分辨率自适应  插件
+
 
 //富文本编辑器
 import VueQuillEditor from 'vue-quill-editor'
