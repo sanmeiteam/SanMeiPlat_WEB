@@ -447,7 +447,7 @@ marginBottom: 5,
         let tempid2=this.tempData.id * 13 + 7;
         this.dialogStatus = "qrcode";
         this.QRCodeDialogFormVisible = true;
-        let url="http://" + window.location.href.split('/')[2] +"/signin?"+encodeURIComponent("="+tempid1 + "a" + tempid2);
+        let url=window.location.href.split('#')[0] +"#/signin?"+encodeURIComponent("="+tempid1 + "a" + tempid2);
         window.setTimeout(function(){
           let canvas = document.getElementById('canvas');
           QRCode.toCanvas(canvas, url,{
