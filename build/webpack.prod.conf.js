@@ -15,12 +15,13 @@ function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 
-const env = require('../config/prod.env')
+//const env = require('../config/prod.env')
+const env = config.build.env;
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({
       sourceMap: config.build.productionSourceMap,
-      extract: true,
+      extract: false,//李智敏修改 5.26
       usePostCSS: true
     })
   },
