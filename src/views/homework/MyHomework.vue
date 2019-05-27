@@ -15,7 +15,7 @@
             </el-select>
             <!--<el-input style="width: 200px" v-model="listQuery.keywords" placeholder="输入关键字"-->
             <!--@keyup.enter.native="getList"></el-input>-->
-            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('class:list')"
+            <el-button style="margin-left: 20px" type="primary" icon="plus" v-if="hasPerm('hwk:list')"
                        @click="getList">查询
             </el-button>
             <!--<el-button type="primary" icon="plus" v-if="hasPerm('class:add')&&listQuery.courseId>''" @click="showCreate">新增</el-button>-->
@@ -63,7 +63,7 @@
 
       <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
-      <el-table-column align="center" label="管理" width="120" v-if="hasPerm('class:update')" fixed="right">
+      <el-table-column align="center" label="管理" width="120" v-if="hasPerm('hwk:update')" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">写心得</el-button>
           <!--<el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"-->
