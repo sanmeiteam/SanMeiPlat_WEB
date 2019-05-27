@@ -12,10 +12,10 @@ export const constantRouterMap = [
     path: '/',
     component: Layout,
     redirect: '/personal/',
-    name: '首页',
+    name: '索引',
     hidden: true,
     children: [{
-      path: 'MyPage', component: _import('personal/MyPage')
+      path: 'MyGuide', component: _import('personal/MyGuide')
     }]
   }
 ]
@@ -35,17 +35,45 @@ export const asyncRouterMap = [
     children: [
       {
         path: '',
+        name: '操作指导',
+        component: _import('personal/MyGuide'),
+        meta: {title: '索引', icon: 'desktop'},
+        menu: 'MyGuide'
+      },
+      {
+        path: 'MyPageAdmin',
         name: '我的首页',
-        component: _import('personal/MyPage'),
+        component: _import('personal/MyPageAdmin'),
         meta: {title: '我的首页', icon: 'home'},
-        menu: 'MyPage'
+        menu: 'MyPage1'
+      },
+      {
+        path: 'MyPageOrg',
+        name: '我的首页',
+        component: _import('personal/MyPageOrg'),
+        meta: {title: '我的首页', icon: 'home'},
+        menu: 'MyPage2'
+      },
+      {
+        path: 'MyPageTea',
+        name: '我的首页',
+        component: _import('personal/MyPageTea'),
+        meta: {title: '我的首页', icon: 'home'},
+        menu: 'MyPage3'
+      },
+      {
+        path: 'MyPageStu',
+        name: '我的首页',
+        component: _import('personal/MyPageStu'),
+        meta: {title: '我的首页', icon: 'home'},
+        menu: 'MyPage4'
       },
       {
         path: 'MyInfo',
         name: '我的信息',
         component: _import('personal/MyInfo'),
         meta: {title: '我的信息', icon: 'edit'},
-        menu: 'MyPage'
+        menu: 'MyInfo'
       },
     ]
   },

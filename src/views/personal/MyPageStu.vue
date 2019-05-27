@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    页面建设中...
+    学员首页，建设中...
   </div>
 </template>
 <script>

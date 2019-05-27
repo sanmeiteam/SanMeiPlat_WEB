@@ -85,6 +85,7 @@
       getInfo() {
         //获取当前课时信息
         document.getElementById("signSwitch").style.display = "none";
+        alert(window.location.href);
         let tempid=decodeURIComponent(window.location.href.split('=')[0].split('?')[1]).split('a')[1];
         this.checkinForm.tempScheduleId="" + parseInt((tempid-7)/13);
         let totalCount=0;
@@ -96,7 +97,8 @@
         tempParams=this.checkinForm;
         //alert(getUA);
         //document.getElementById("signDev").innerHTML = getUA;
-        axios.get("api/sign/list",{
+        axios.get("sign/list",{
+        //axios.get("api/sign/list",{
           params:tempParams
         })
           .then( (response) => {

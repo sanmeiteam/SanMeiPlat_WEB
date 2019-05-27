@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
-    学员使用须知：
-    <hr>
+    承办方首页，建设中...
   </div>
 </template>
 <script>
