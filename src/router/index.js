@@ -131,7 +131,7 @@ export const asyncRouterMap = [
         name: '作业评阅',
         component: _import('homework/HomeworkRemark'),
         meta: {title: '作业评阅', icon: 'audit'},
-        menu: 'HomeworkRemark'
+        menu: 'hwkR'
       },
       {
         path: 'HomeworkStatistics',
