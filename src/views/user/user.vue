@@ -109,7 +109,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="昵称" required>
+            <el-form-item label="姓名" required>
               <el-input type="text" v-model="tempUser.nickname">
               </el-input>
             </el-form-item>
@@ -119,13 +119,13 @@
           <el-col :span="12">
             <el-form-item label="性别" required>
               <el-select v-model="tempUser.sex" placeholder="请选择">
-                <el-option label="男" value="男"></el-option>
                 <el-option label="女" value="女"></el-option>
+                <el-option label="男" value="男"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="年龄" required>
+            <el-form-item label="年龄">
               <el-input type="text" v-model="tempUser.age">
               </el-input>
             </el-form-item>
