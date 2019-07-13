@@ -137,6 +137,7 @@ marginBottom: 5,
     data() {
       return {
         totalCount: 0, //分页组件--数据总条数
+        totalCountTemp: 0, //分页组件--数据总条数
         list: [],//表格的数据
         listLoading: false,//数据加载等待动画
         listQuery: {
@@ -220,7 +221,7 @@ marginBottom: 5,
         }).then(data => {
           this.listLoading = false;
           this.list = data.result;
-          this.totalCount = data.totalCount;
+          this.totalCount = data.result.length;
         })
       },
       onSuccess() {

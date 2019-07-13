@@ -17,7 +17,7 @@
                 首页
               </el-dropdown-item>
             </router-link>
-            <router-link class="inlineBlock" to="/">
+            <router-link class="inlineBlock" to="/personal/MyInfo">
               <el-dropdown-item>
                 修改密码
               </el-dropdown-item>

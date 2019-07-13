@@ -85,18 +85,6 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="密码" v-if="dialogStatus=='create'" required>
-              <el-input type="password" v-model="tempUser.password">
-              </el-input>
-            </el-form-item>
-            <el-form-item label="新密码" v-else>
-              <el-input type="password" v-model="tempUser.password" placeholder="不填则表示不修改">
-              </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
             <el-form-item label="角色" required>
               <el-select v-model="tempUser.roleId" placeholder="请选择">
                 <el-option
@@ -108,6 +96,18 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="12" hidden="hidden">
+            <el-form-item label="密码" v-if="dialogStatus=='create'" required>
+              <el-input type="password" v-model="tempUser.password">
+              </el-input>
+            </el-form-item>
+            <el-form-item label="新密码" v-else>
+              <el-input type="password" v-model="tempUser.password" placeholder="不填则表示不修改">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row hidden="hidden">
           <el-col :span="12">
             <el-form-item label="姓名" required>
               <el-input type="text" v-model="tempUser.nickname">
@@ -306,7 +306,7 @@ marginBottom: 5,
       showCreate() {
         //显示新增对话框
         this.tempUser.username = "";
-        this.tempUser.password = "";
+        this.tempUser.password = "lingguibafa";
         this.tempUser.nickname = "";
         this.tempUser.sex = "";
         this.tempUser.age = "";
@@ -336,7 +336,7 @@ marginBottom: 5,
         this.tempUser.roleId = user.roleId;
         this.tempUser.userId = user.userId;
         this.tempUser.deleteStatus = '1';
-        this.tempUser.password = '';
+        //this.tempUser.password = '';
         this.dialogStatus = "update";
         this.dialogFormVisible = true
       },
