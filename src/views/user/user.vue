@@ -80,7 +80,11 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="用户名" required v-if="dialogStatus=='create'">
-              <el-input type="text" v-model="tempUser.username">
+            <el-input type="text" v-model="tempUser.username">
+            </el-input>
+          </el-form-item>
+            <el-form-item label="用户名" required v-else>
+              <el-input type="text" v-model="tempUser.username" disabled="disabled">
               </el-input>
             </el-form-item>
           </el-col>
