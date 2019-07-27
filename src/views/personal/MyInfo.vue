@@ -26,7 +26,7 @@
               <img v-if="imageUrl" :src="imageUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
-            请上传头像
+            请上传头像（待开发）
           </div>
         </el-col>
       </el-row>
