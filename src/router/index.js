@@ -29,12 +29,12 @@ export const asyncRouterMap = [
   {
     path: '/personal',
     component: Layout,
-    redirect: '/personal/',
+    redirect: '/personal/MyGuide',
     name: '',
     meta: {title: '个人中心', icon: 'star'},
     children: [
       {
-        path: '',
+        path: 'MyGuide',
         name: '操作指导',
         component: _import('personal/MyGuide'),
         meta: {title: '索引', icon: 'desktop'},
