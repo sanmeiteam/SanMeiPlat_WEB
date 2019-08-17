@@ -27,15 +27,15 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="listQuery.pageNum"
-      :page-size="listQuery.pageRow"
-      :total="totalCount"
-      :page-sizes="[10, 20, 50, 100]"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+    <!--<el-pagination-->
+      <!--@size-change="handleSizeChange"-->
+      <!--@current-change="handleCurrentChange"-->
+      <!--:current-page="listQuery.pageNum"-->
+      <!--:page-size="listQuery.pageRow"-->
+      <!--:total="totalCount"-->
+      <!--:page-sizes="[10, 20, 50, 100]"-->
+      <!--layout="total, sizes, prev, pager, next, jumper">-->
+    <!--</el-pagination>-->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form class="small-space" :model="tempArticle" label-position="left" label-width="60px"
                style='width: 300px; margin-left:50px;'>
@@ -61,7 +61,7 @@
         listLoading: false,//数据加载等待动画
         listQuery: {
           pageNum: 1,//页码
-          pageRow: 50,//每页条数
+          pageRow: 1000,//每页条数
           name: ''
         },
         dialogStatus: 'create',

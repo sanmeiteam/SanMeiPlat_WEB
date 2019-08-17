@@ -34,15 +34,15 @@
       </el-table-column>
     </el-table>
     <addCourseType ref="addCourseType"></addCourseType>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="listQuery.pageNum"
-      :page-size="listQuery.pageRow"
-      :total="totalCount"
-      :page-sizes="[10, 20, 50, 100]"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+    <!--<el-pagination-->
+      <!--@size-change="handleSizeChange"-->
+      <!--@current-change="handleCurrentChange"-->
+      <!--:current-page="listQuery.pageNum"-->
+      <!--:page-size="listQuery.pageRow"-->
+      <!--:total="totalCount"-->
+      <!--:page-sizes="[10, 20, 50, 100]"-->
+      <!--layout="total, sizes, prev, pager, next, jumper">-->
+    <!--</el-pagination>-->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form class="small-space" :model="tempData" label-position="right" label-width="120px"
                style='width: 650px; margin-left:50px; margin-right:50px;'>
@@ -76,7 +76,7 @@
           courseType: '',
           id: '',
           pageNum: 1,//页码
-          pageRow: 50,//每页条数
+          pageRow: 1000,//每页条数
         },
         roles: [],//角色列表
         dialogStatus: 'create',

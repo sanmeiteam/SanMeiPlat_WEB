@@ -1,6 +1,6 @@
 <template>
-
   <scroll-bar>
+    <div class="plat_name">三昧古中医平台</div>
     <el-menu mode="vertical" unique-opened :default-active="$route.path" :collapse="isCollapse"
              background-color="#304156" text-color="#fff" active-text-color="#409EFF">
       <sidebar-item :routes="permission_routers"></sidebar-item>

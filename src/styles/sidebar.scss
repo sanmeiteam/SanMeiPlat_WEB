@@ -4,7 +4,7 @@
     min-height: 100%;
     transition: margin-left 0.28s;
     padding-left: 180px;//自定义 margin改为padding
-    padding-top:60px;  //为banner预留
+    //padding-top:60px;  //为banner预留
   } // 侧边栏
   .sidebar-container {
     transition: width 0.28s;
@@ -14,7 +14,7 @@
     top: 0;
     bottom: 0;
     left: 0;
-    margin-top:60px;  //为banner预留
+    //margin-top:60px;  //为banner预留
     z-index: 1001;
     a {
       display: inline-block;
@@ -28,6 +28,17 @@
       width: 100%;
     }
   }
+  .plat_name  //平台名字 样式  自定义  20190815
+  {
+    height: 50px;
+    color: white;
+    font-family: "微软雅黑";
+    font-size:20px;
+    padding-top:15px;
+    padding-left:15px;
+    background-color:#334444;
+    //background-color: sienna;
+  }
   .hideSidebar {
     .sidebar-container,.sidebar-container .el-menu {
       width: 36px!important;
@@ -35,6 +46,9 @@
     }
     .main-container {
       padding-left: 36px; //自定义 margin改为padding
+    }
+    .navbar {
+      padding-right: 36px;
     }
   }
   .hideSidebar {

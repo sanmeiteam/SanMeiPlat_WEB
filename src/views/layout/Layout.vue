@@ -15,7 +15,7 @@ import { Banner, Navbar, Sidebar, AppMain } from '@/views/layout/components'
 export default {
   name: 'layout',
   components: {
-    Banner,
+    //Banner,   //放开的话，需要修改styles/sidebar.scss   banner预留
     Navbar,
     Sidebar,
     AppMain

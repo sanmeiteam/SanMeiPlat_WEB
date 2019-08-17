@@ -72,15 +72,15 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="listQuery.pageNum"
-      :page-size="listQuery.pageRow"
-      :total="totalCount"
-      :page-sizes="[10, 20, 50, 100]"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+    <!--<el-pagination-->
+      <!--@size-change="handleSizeChange"-->
+      <!--@current-change="handleCurrentChange"-->
+      <!--:current-page="listQuery.pageNum"-->
+      <!--:page-size="listQuery.pageRow"-->
+      <!--:total="totalCount"-->
+      <!--:page-sizes="[10, 20, 50, 100]"-->
+      <!--layout="total, sizes, prev, pager, next, jumper">-->
+    <!--</el-pagination>-->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" fullscreen="true">
       <el-form class="small-space" :model="tempData" label-position="right" label-width="100px"
                style='margin-left:30px; margin-right:50px; ' >
@@ -173,7 +173,7 @@ marginBottom: 5,
         listLoading: false,//数据加载等待动画
         listQuery: {
           pageNum: 1,//页码
-          pageRow: 50,//每页条数
+          pageRow: 1000,//每页条数
           keywords: '', //关键字查询
           role: '',//角色 班内角色
           courseId:'',
