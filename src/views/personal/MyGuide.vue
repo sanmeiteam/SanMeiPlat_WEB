@@ -9,7 +9,7 @@
       <p>
         &nbsp;&nbsp;&nbsp;&nbsp;<i class="el-icon-edit-outline"></i>&nbsp;&nbsp;&nbsp;&nbsp;
         为了便于平台管理及信息共享，请您
-        <router-link style="color:#0066cc;text-decoration: underline;" to="/personal/MyInfo">完善个人信息</router-link>
+        <router-link style="color:#0066cc;text-decoration: underline;font-size:16px;" to="/personal/MyInfo">完善个人信息</router-link>
         。
       </p>
       <p>

@@ -346,6 +346,7 @@ marginBottom: 5,
       },
       createUser() {
         //添加新用户
+        this.tempUser.nickname=this.tempUser.username;
         this.api({
           url: "/user/addUser",
           method: "post",
