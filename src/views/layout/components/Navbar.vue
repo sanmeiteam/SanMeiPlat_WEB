@@ -7,7 +7,7 @@
         <tr>
           <td width="100"><div class="userInfoCls" id="loginUserInfo"></div></td>
           <td width="150" style="text-align: center;border-right:solid 1px #dddddd;">
-            您好 ：李智敏
+            您好 ：<span id="curUserName"></span>
           </td>
           <td width="100" style="text-align: center;border-right:solid 1px #dddddd;">
             <router-link class="inlineBlock" to="/">
@@ -38,10 +38,24 @@ export default {
     Breadcrumb,
     Hamburger
   },
+  data(){
+    return{
+      userList:[], //人员信息
+      listQuery: {
+        curUserId:'', //登录用户id
+        curUserName:'',//登录用户姓名
+      },
+    }
+  },
+  created() {
+    this.getUsers();
+
+  },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar',
+      'userId',
       'nickname'
     ])
   },
@@ -56,7 +70,19 @@ export default {
     },
     gotoIndex() {
       ////跳到首页
-    }
+    },
+
+    getUsers() {
+
+      this.api({
+        url: "/PersonalMyPage/curUser",
+        method: "get",
+        params: this.userId
+      }).then(data => {
+        this.userList = data.result;
+        document.getElementById("curUserName").innerHTML=this.userList[0].userName;
+      });
+    },
 
   }
 }
