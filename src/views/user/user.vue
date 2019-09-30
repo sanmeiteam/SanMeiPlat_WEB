@@ -129,7 +129,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="年龄">
+            <el-form-item label="年龄" required>
               <el-input type="text" v-model="tempUser.age">
               </el-input>
             </el-form-item>

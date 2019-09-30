@@ -89,6 +89,11 @@
       <!--layout="total, sizes, prev, pager, next, jumper">-->
     <!--</el-pagination>-->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" fullscreen="true">
+      <div style="position: absolute; float:left; z-index:1005; left:100px;top:10px;">
+        <div id="yiyue" style="width:80px;height:80px;" v-if="tempData.comment>''">
+          <img src="./yiyue.gif" />
+        </div>
+      </div>
       <el-form class="small-space" :model="tempData" label-position="right" label-width="100px"
                style='margin-left:30px; margin-right:50px; ' >
         <el-row>
