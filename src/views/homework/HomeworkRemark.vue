@@ -70,7 +70,7 @@
 
       <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
       <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
-      <el-table-column align="center" label="管理" width="120" v-if="hasPerm('hwkR:update')" fixed="right">
+      <el-table-column align="center" label="管理" width="120" v-if="hasPerm('hwkR:read')" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">评阅心得</el-button>
           <!--<el-button type="danger" icon="delete"  v-if="hasPerm('class:delete')"-->
@@ -152,7 +152,7 @@
       </el-form>
       <div slot="footer" style="text-align: center;margin-top:-40px;">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="reviewData">提 交</el-button>
+        <el-button type="primary" @click="reviewData" v-if="hasPerm('hwkR:update')">提 交</el-button>
       </div>
     </el-dialog>
   </div>
