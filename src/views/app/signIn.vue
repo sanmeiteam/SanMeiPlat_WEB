@@ -156,7 +156,7 @@
         // 1. 判断时间是否在有效签到时间内
         let date=new Date();
         let signState="";//判断签到状态  正常，迟到
-        let ddate=new Date(Date.parse(_vue.checkinForm.scheduleDate + " " +_vue.checkinForm.startTime));
+        let ddate=new Date(Date.parse((_vue.checkinForm.scheduleDate + " " +_vue.checkinForm.startTime).replace(/\-/g, "/")));
         if (date.Format("yyyy-MM-dd") == ddate.Format("yyyy-MM-dd") && date.Format("hh:mm:ss")<=new Date(ddate.getTime() + 1 * 60 * 60 * 1000).Format("hh:mm:ss")){
          ////       当前日期==课程开课日期      &&    当前时间<=开课时间+1h  （允许迟到1小时，超过1小时为旷课）
           if (date.Format("hh:mm:ss")<=ddate.Format("hh:mm:ss")){
