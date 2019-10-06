@@ -32,6 +32,9 @@
               <el-button v-if="hasPerm('user:importExcel')" size="small" style="font-size:14px;" type="primary">点击上传</el-button>
             </el-upload>
           </div>
+          <!--<div style="float:left; margin-left: 20px;">-->
+            <!--<a :href='"template.xls"' style="color:blue;text-decoration: underline;">模板下载</a>-->
+          <!--</div>-->
         </div>
       </el-form-item>
     </el-form>
@@ -42,7 +45,7 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="姓名" prop="nickname"></el-table-column>
+      <!--<el-table-column align="center" label="姓名" prop="nickname"></el-table-column>-->
       <el-table-column align="center" label="用户名" prop="username"></el-table-column>
       <el-table-column align="center" label="角色" width="100">
         <template slot-scope="scope">
@@ -89,7 +92,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="角色" required>
+            <el-form-item label="角色" v-if="MyInfo.roleName=='管理员'" required>
               <el-select v-model="tempUser.roleId" placeholder="请选择">
                 <el-option
                   v-for="item in roles"
@@ -97,6 +100,11 @@
                   :label="item.roleName"
                   :value="item.roleId">
                 </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="角色" v-else required>
+              <el-select v-model="tempUser.roleId" placeholder="请选择">
+                <el-option label="学员" value="5"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -227,7 +235,7 @@ marginBottom: 5,
         input: {
           keywords: ''
         },
-        tempUser: {
+        tempUser: {  //待写入信息  临时信息
           username: '',
           password: '',
           nickname: '',
@@ -241,10 +249,29 @@ marginBottom: 5,
           introducer: '',
           roleId: '',
           userId: ''
+        },
+        MyInfo: {  //登录人信息
+          username: '',
+          passWord: '',
+          password1: '',
+          password2: '',
+          nickname: '',
+          sex: '',
+          age: '',
+          phone: '',
+          qq: '',
+          wechat: '',
+          aera: '',
+          education: '',
+          introducer: '',
+          roleName: '',
+          id: ''
         }
       }
     },
     created() {
+      this.MyInfo.id=this.userId;
+      this.getMyInfo();
       this.getList();
       if (this.hasPerm('user:add') || this.hasPerm('user:update')) {
         this.getAllRoles();
@@ -257,6 +284,30 @@ marginBottom: 5,
     },
     methods: {
 
+
+  ///获取登录人信息
+      getMyInfo() {
+        //查询列表
+        this.listLoading = true;
+        this.api({
+          url: "/user/myInfo",
+          method: "get",
+          params: this.MyInfo
+        }).then(data => {
+          this.listLoading = false;
+          this.list = data.result;
+          this.MyInfo.username=this.list[0].userName;
+          this.MyInfo.sex=this.list[0].sex;
+          this.MyInfo.age=this.list[0].age;
+          this.MyInfo.roleName=this.list[0].roleName;
+          this.MyInfo.education=this.list[0].education;
+          this.MyInfo.aera=this.list[0].aera;
+          this.MyInfo.qq=this.list[0].qq;
+          this.MyInfo.wechat=this.list[0].wechat;
+          this.MyInfo.phone=this.list[0].phone;
+          this.MyInfo.introducer=this.list[0].introducer;
+        })
+      },
       getAllRoles() {
         this.api({
           url: "/user/getAllRoles",
@@ -320,7 +371,7 @@ marginBottom: 5,
         this.tempUser.aera = "";
         this.tempUser.education = "";
         this.tempUser.introducer = "";
-        this.tempUser.roleId = "";
+        this.tempUser.roleId = "5";
         this.tempUser.userId = "";
         this.dialogStatus = "create";
         this.dialogFormVisible = true
