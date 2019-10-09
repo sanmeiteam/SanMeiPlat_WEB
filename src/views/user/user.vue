@@ -24,7 +24,7 @@
           <div style="float:left; margin-left: 20px;">
             <el-upload
               class="upload-demo"
-              action="api/user/importUserExcel"
+              action="/user/importUserExcel"
               :multiple="false"
               :on-success="onSuccess"
               limit="100"
@@ -92,6 +92,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <!--@todo:  1.角色显示的问题 2.低权限不应该修改高权限人员-->
             <el-form-item label="角色" v-if="MyInfo.roleName=='管理员'" required>
               <el-select v-model="tempUser.roleId" placeholder="请选择">
                 <el-option
@@ -104,7 +105,7 @@
             </el-form-item>
             <el-form-item label="角色" v-else required>
               <el-select v-model="tempUser.roleId" placeholder="请选择">
-                <el-option label="学员" value="5"></el-option>
+                <el-option key="5" label="学员" value="5"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
