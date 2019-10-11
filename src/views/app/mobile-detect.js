@@ -578,7 +578,7 @@ define(function () {
             t.is('Tizen') ||
 
             // Samsung Bada 2.0 - Tested on a Samsung Wave 3, Dolphin browser
-            // @todo: more tests here!
+            //
             t.is('Dolfin') && t.version('Bada')>=2.0 ||
 
             // UC Browser - Tested on Android 2.3 device
@@ -626,7 +626,7 @@ define(function () {
             // Nokia Symbian^3 - Tested on Nokia N8 (Symbian^3), C7 (Symbian^3), also works on N97 (Symbian^1)
             t.match('NokiaN8|NokiaC7|N97.*Series60|Symbian/3') ||
 
-            // @todo: report this (tested on Nokia N71)
+            //
             t.version('Opera Mobi')>=11 && t.is('SymbianOS')
             ){
             return 'B';

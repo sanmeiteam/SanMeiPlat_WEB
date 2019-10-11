@@ -330,11 +330,12 @@ marginBottom: 5,
           this.totalCount = data.totalCount;
         })
       },
-      onSuccess() {
+      onSuccess(response) {
         this.$message({
-          message: "上传成功",
+          //message: "上传成功",
+          message: response.result,
           type: 'success',
-          duration: 1 * 1000,
+          duration: 3 * 1000,
           onClose: () => {
             this.getList();
           }
