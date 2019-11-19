@@ -7,6 +7,9 @@ Vue.use(Router)
 export const constantRouterMap = [
   {path: '/login', component: _import('login/index'), hidden: true},
   {path: '/signin', component: _import('app/signIn'), hidden: true},
+  {path: '/linggui', component: _import('app/linggui'), hidden: true},
+  {path: '/lgqx', component: _import('app/lgqx'), hidden: true},
+
   {path: '/404', component: _import('404'), hidden: true},
   {
     path: '/',
@@ -162,11 +165,11 @@ export const asyncRouterMap = [
         menu: 'hwkR'
       },
       {
-        path: 'HomeworkStatistics',
-        name: '作业完成情况',
+        path: 'CourseScore',
+        name: '我的学分',
         component: _import('homework/HomeworkStatistics'),
-        meta: {title: '作业完成情况', icon: 'ordered list'},
-        menu: 'HomeworkStatistics'
+        meta: {title: '我的学分', icon: 'ordered list'},
+        menu: 'cosScore'
       },
     ]
   },

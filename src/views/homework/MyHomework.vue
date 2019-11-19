@@ -61,8 +61,8 @@
       <!--<el-table-column align="center" label="评阅学分" prop="reviewScore" width="100"></el-table-column>-->
       <!--<el-table-column align="center" label="评阅时间" prop="reviewTime" width="100"></el-table-column>-->
 
-      <el-table-column align="center" label="创建时间" prop="createTime" width="100"></el-table-column>
-      <el-table-column align="center" label="最近修改时间" prop="updateTime" width="120"></el-table-column>
+      <el-table-column align="center" label="课时学分" prop="scores" width="80"></el-table-column>
+      <el-table-column align="center" label="修改时间" prop="updateTime" width="100"></el-table-column>
       <el-table-column align="center" label="管理" width="120" v-if="hasPerm('hwk:update')" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">写心得</el-button>

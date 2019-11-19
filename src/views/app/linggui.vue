@@ -1,20 +1,30 @@
 <template>
   <div class="login-container">
-    <div id="banner" style="width:100%;height:50px;background-color:#eeeeee;font-size:24pt;font-weight:bold;color:black;text-align:center;padding-top:10px;">
+    <div id="banner" style="width:100%;height:10rem;background-color:#eeeeee;font-size:5rem;font-weight:bold;color:black;text-align:center;padding-top:2rem;">
       灵龟八法-取穴查询
+
+      <br />
+
     </div>
-    <div id="con" style="border:solid 1px red; height:100px;"></div>
-    <div id="nextCon"></div>
-    <div id="dayt">
-      <table cellpadding=0 cellspacing=0 style="border-collapse:collapse;width:100%;background-color:gray;">
-        <tr style="background-color:#eeeeee;">
-          <td id="pday"><input type="button" value="   <<   " onclick="javascript:queryDay(-1);" /></td>
-          <td id="tday"></td>
-          <td id="nday"><input type="button" value="   >>   " onclick="javascript:queryDay(1);" /></td>
-        </tr>
-      </table>
+    <div style="margin-top:3rem; width:100%;padding-left: 5rem; line-height: 1.5em; font-size:5rem; ">
+      <span>第一步：在浏览器中打开</span>
+      <br/>
+      <span>第二步：</span>
+      <a href="/static/download/lgbf.apk" style="cursor: pointer;text-decoration: underline;color:blue;">点此下载安装</a>
     </div>
-    <div id="dayq"></div>
+
+    <!--<div id="con" style="border:solid 1px red; height:100px;"></div>-->
+    <!--<div id="nextCon"></div>-->
+    <!--<div id="dayt">-->
+      <!--<table cellpadding=0 cellspacing=0 style="border-collapse:collapse;width:100%;background-color:gray;">-->
+        <!--<tr style="background-color:#eeeeee;">-->
+          <!--<td id="pday"><input type="button" value="   <<   " onclick="javascript:queryDay(-1);" /></td>-->
+          <!--<td id="tday"></td>-->
+          <!--<td id="nday"><input type="button" value="   >>   " onclick="javascript:queryDay(1);" /></td>-->
+        <!--</tr>-->
+      <!--</table>-->
+    <!--</div>-->
+    <!--<div id="dayq"></div>-->
   </div>
 
 </template>
@@ -23,6 +33,7 @@
     name: 'login',
     data() {
       return {
+        lgbf:'lgbf.apk',
         loginForm: {
           username: 'admin',
           password: '123456'

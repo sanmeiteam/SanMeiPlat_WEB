@@ -32,9 +32,9 @@
               <el-button v-if="hasPerm('user:importExcel')" size="small" style="font-size:14px;" type="primary">点击上传</el-button>
             </el-upload>
           </div>
-          <!--<div style="float:left; margin-left: 20px;">-->
-            <!--<a :href='"template.xls"' style="color:blue;text-decoration: underline;">模板下载</a>-->
-          <!--</div>-->
+          <div style="float:left; margin-left: 20px;">
+            <a href="/static/download/template.xls" style="cursor: pointer;color:blue;text-decoration: underline;">模板下载</a>
+          </div>
         </div>
       </el-form-item>
     </el-form>
