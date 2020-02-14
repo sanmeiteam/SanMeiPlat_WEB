@@ -1,25 +1,25 @@
 <template>
   <el-menu class="navbar" mode="horizontal">
     <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
-    <breadcrumb></breadcrumb>
-    <div style="border: solid 0px red; float: right;height: 50px;font-size:15px;">
+    <breadcrumb style="border:solid 0px green;"></breadcrumb>
+    <div style="border: solid 0px red; height: 50px;font-size:15px;width:285px;float:right;">
       <table cellpadding="0" cellspacing="0" border="0" width="100%">
         <tr>
-          <td width="100"><div class="userInfoCls" id="loginUserInfo"></div></td>
-          <td width="150" style="text-align: center;border-right:solid 1px #dddddd;">
+          <td width="0"><div class="userInfoCls" id="loginUserInfo"></div></td>
+          <td width="100" style="text-align: left;border-right:solid 1px #dddddd;">
             您好 ：<span id="curUserName"></span>
           </td>
-          <td width="100" style="text-align: center;border-right:solid 1px #dddddd;">
+          <td width="50" style="text-align: center;border-right:solid 1px #dddddd;">
             <router-link class="inlineBlock" to="/">
               首页
             </router-link>
           </td>
-          <td width="100" style="text-align: center;border-right:solid 1px #dddddd;">
+          <td width="80" style="text-align: center;border-right:solid 1px #dddddd;">
             <router-link class="inlineBlock" to="/personal/MyInfo">
                 修改密码
             </router-link>
           </td>
-          <td width="100" style="text-align: center;">
+          <td width="50" style="text-align: center;">
             <span @click="logout" style="display:block; cursor: pointer;">退出</span>
           </td>
         </tr>
@@ -98,12 +98,14 @@ export default {
   border-radius: 0px !important;
   background-color: #fcfcfc;
   z-index: 1002;
-  .hamburger-container {
-    line-height: 58px;
-    height: 50px;
-    float: left;
-    padding: 0 10px;
+  border:solid 0px blue;
   }
+.hamburger-container {
+  line-height: 58px;
+  height: 50px;
+  border:solid 0px red;
+  float: left;
+  padding: 0 10px;
 }
 
 .banner-container {

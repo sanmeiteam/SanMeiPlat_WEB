@@ -12,8 +12,6 @@ import {default as api} from './utils/api'
 import {hasPermission} from "./utils/hasPermission";
 import Blob from './excel/Blob.js';
 import Export2Excel from './excel/Export2Excel.js';
-//import 'lib-flexible'  ///移动端分辨率自适应  插件
-
 
 //富文本编辑器
 import VueQuillEditor from 'vue-quill-editor'
@@ -21,6 +19,9 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import '@/styles/index.scss' // global css
+
+import 'lib-flexible/flexible'  ///移动端分辨率自适应  插件
+
 Vue.use(VueQuillEditor)
 
 //获取移动设备信息
